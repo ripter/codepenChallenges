@@ -6,7 +6,7 @@ export default {
 	output: {
 		file: 'public/bundle.js',
 		format: 'iife',
-		sourcemap: true
+		sourcemap: true,
 	},
 	plugins: [
 		resolve(), // tells Rollup how to find libraries in node_modules

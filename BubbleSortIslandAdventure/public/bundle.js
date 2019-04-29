@@ -82,7 +82,7 @@
   }
 
   function _templateObject2() {
-    var data = _taggedTemplateLiteral(["<div class=\"visitor\"\n  spritesheet=", "\n  sprite=", ">\n</div>"]);
+    var data = _taggedTemplateLiteral(["<div\n  class=\"island\"\n  data-idx=", "\n  sprite=", "\n  onclick=", "\n  action=", "\n  style=", "\n  >\n  ", "\n</div>"]);
 
     _templateObject2 = function _templateObject2() {
       return data;
@@ -92,7 +92,7 @@
   }
 
   function _templateObject() {
-    var data = _taggedTemplateLiteral(["<div\n  class=\"island\"\n  data-idx=", "\n  sprite=", "\n  onclick=", "\n  action=", "\n  style=", "\n  >\n  ", "\n</div>"]);
+    var data = _taggedTemplateLiteral(["<div class=\"visitor\"\n  spritesheet=", "\n  sprite=", ">\n</div>"]);
 
     _templateObject = function _templateObject() {
       return data;
@@ -114,7 +114,7 @@
   var elDialog = window.elDialog; //
   // Game State
 
-  var state = window.state = {
+  var gameState = window.gameState = {
     isDialogOpen: false,
     didWin: true,
     storyIndex: 0,
@@ -202,27 +202,25 @@
   // Views/Render functions
   //
   //
-  // An island is a sprite with optional child sprite.
-
-  var renderIsland = function renderIsland(_ref, visitor, key) {
-    var sprite = _ref.sprite;
-    return lighterhtml.html(_templateObject(), key, sprite, state, ACTIONS.SWAP_ISLANDS, '', !visitor ? '' : renderVisitor(visitor));
-  }; //
   // Visitor is just a sprite.
 
+  var renderVisitor = function renderVisitor(_ref) {
+    var sprite = _ref.sprite,
+        spritesheet = _ref.spritesheet;
+    return lighterhtml.html(_templateObject(), spritesheet, sprite);
+  }; //
+  // An island is a sprite with optional child sprite.
 
-  var renderVisitor = function renderVisitor(_ref2) {
-    var sprite = _ref2.sprite,
-        spritesheet = _ref2.spritesheet;
-    return lighterhtml.html(_templateObject2(), spritesheet, sprite);
+
+  var renderIsland = function renderIsland(_ref2, visitor, key) {
+    var sprite = _ref2.sprite;
+    return lighterhtml.html(_templateObject2(), key, sprite, gameState, ACTIONS.SWAP_ISLANDS, '', !visitor ? '' : renderVisitor(visitor));
   }; //
   // Render the level
 
 
   function renderLevel(elm, state) {
-    var islands = state.islands,
-        didWin = state.didWin,
-        visitors = state.visitors; // Render the islands
+    var islands = state.islands; // Render the islands
 
     lighterhtml.render(elm, function () {
       return lighterhtml.html(_templateObject3(), islands.map(function (island, idx) {
@@ -235,8 +233,6 @@
 
 
   function renderDialog(elm, state) {
-    var _this = this;
-
     var storyIndex = state.storyIndex;
     var _story$storyIndex = story[storyIndex],
         title = _story$storyIndex.title,
@@ -252,7 +248,7 @@
     }
 
     lighterhtml.render(elm, function () {
-      return lighterhtml.html(_templateObject4(), classList.join(' '), _this, title, paragraphs.map(function (txt) {
+      return lighterhtml.html(_templateObject4(), classList.join(' '), state, title, paragraphs.map(function (txt) {
         return lighterhtml.html(_templateObject5(), txt);
       }), state, next.action, next.label);
     });
@@ -264,8 +260,7 @@
   // Swaps the two islands in state.swapIndexes.
 
 
-  function updateIslandPositions(state, event) {
-    var type = event.type;
+  function updateIslandPositions(state) {
     var swapIndexes = state.swapIndexes,
         islands = state.islands;
 
@@ -297,9 +292,8 @@
   // Check if the user won!
 
 
-  function updateDidWin(state, event) {
-    var islands = state.islands,
-        goal = state.goal,
+  function updateDidWin(state) {
+    var goal = state.goal,
         visitors = state.visitors,
         didWin = state.didWin;
     state.didWin = goal.every(function (_ref3) {
@@ -440,7 +434,6 @@
         bottomIndex = _ref5[0],
         topIndex = _ref5[1];
 
-    console.log('animationSwap');
     markStartAnimation(state);
     return Promise.all([anime({
       targets: ".island:nth-child(".concat(topIndex + 1, ")"),
@@ -524,9 +517,7 @@
     });
     return Promise.all(promiseList).then(function () {
       markEndAnimation(state);
-      document.querySelectorAll('.island').forEach(function (elm) {
-        return elm.style.transform = '';
-      });
+      document.querySelectorAll('.island').forEach(resetTransforms);
     });
   } //
   // Bring all the islands back together animation
@@ -582,23 +573,21 @@
   // Dialog Animations
 
 
-  function animationHideDialog() {
+  function animationHideDialog(state) {
     markStartAnimation(state);
-    console.log('animationHideDialog START');
     return anime({
       targets: '#elDialog',
       easing: 'easeInQuart',
       duration: ANIMATION_DURATION / 2,
       translateX: [0, '-80vw']
     }).finished.then(function () {
-      console.log('animationHideDialog END');
       markEndAnimation(state);
       state.isDialogOpen = false;
       state.storyIndex += 1;
     });
   }
 
-  function animationShowDialog() {
+  function animationShowDialog(state) {
     markStartAnimation(state);
     state.isDialogOpen = true;
     return anime({
@@ -634,6 +623,11 @@
   function markEndAnimation(state) {
     state.isAnimating = false;
     document.body.classList.remove('is-animating');
+  }
+
+  function resetTransforms(elm) {
+    elm.style.transform = '';
+    return elm;
   } //
   // Define some levels
 
@@ -692,12 +686,12 @@
   document.body.style.setProperty('--grid--total-columns', FLOOR_SIZE);
   document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE); // Trigger loading the frist level
 
-  state.handleEvent({
+  gameState.handleEvent({
     type: 'initLevel',
     level: levels[0]
   });
-  Promise.all([animationRestore(state), animationShowDialog(state)]).then(function () {
-    state.triggerRender();
+  Promise.all([animationRestore(gameState), animationShowDialog(gameState)]).then(function () {
+    gameState.triggerRender();
   });
 
 }(lighterhtml));

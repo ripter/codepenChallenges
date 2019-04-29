@@ -1,12 +1,16 @@
 module.exports = {
   extends: 'eslint:recommended',
   parserOptions: {
+    ecmaVersion: 6,
     sourceType: 'module',
   },
   env: {
     browser: true,
-    node: true,
     es6: true,
+  },
+  globals: {
+    anime: 'readonly',
+    lighterhtml: 'readonly',
   },
   rules: {
     //

@@ -13,7 +13,7 @@ const elCanvas = window.canvas;
 const elDialog = window.elDialog;
 //
 // Game State
-const state = window.state = {
+const gameState = window.gameState = {
   isDialogOpen: false,
   didWin: true,
   storyIndex: 0,
@@ -106,30 +106,29 @@ const story = window.story = [
 //
 // Views/Render functions
 //
-
-//
-// An island is a sprite with optional child sprite.
-const renderIsland = ({sprite}, visitor, key) => html`<div
-  class="island"
-  data-idx=${key}
-  sprite=${sprite}
-  onclick=${state}
-  action=${ACTIONS.SWAP_ISLANDS}
-  style=${''}
-  >
-  ${!visitor ? '' : renderVisitor(visitor)}
-</div>`;
 //
 // Visitor is just a sprite.
 const renderVisitor = ({sprite, spritesheet}) => html`<div class="visitor"
   spritesheet=${spritesheet}
   sprite=${sprite}>
 </div>`;
+//
+// An island is a sprite with optional child sprite.
+const renderIsland = ({sprite}, visitor, key) => html`<div
+  class="island"
+  data-idx=${key}
+  sprite=${sprite}
+  onclick=${gameState}
+  action=${ACTIONS.SWAP_ISLANDS}
+  style=${''}
+  >
+  ${!visitor ? '' : renderVisitor(visitor)}
+</div>`;
 
 //
 // Render the level
 function renderLevel(elm, state) {
-  const { islands, didWin, visitors } = state;
+  const { islands } = state;
 
   // Render the islands
   render(elm, () => html`<div>
@@ -152,7 +151,7 @@ function renderDialog(elm, state) {
   }
 
   render(elm, () => html`<div class=${classList.join(' ')}>
-    <form method="dialog" ontransitionend=${this}>
+    <form method="dialog" ontransitionend=${state}>
       <p class="title">${title}</p>
       ${paragraphs.map(txt => html`<p>${txt}</p>`)}
       <menu class="dialog-menu">
@@ -171,8 +170,7 @@ function renderDialog(elm, state) {
 //
 // updates the position of islands in the state.islands array.
 // Swaps the two islands in state.swapIndexes.
-function updateIslandPositions(state, event) {
-  const { type } = event;
+function updateIslandPositions(state) {
   const { swapIndexes, islands } = state;
   if (swapIndexes.length !== 2) { return state; }
   const bottomIsland = islands[swapIndexes[0]];
@@ -196,8 +194,8 @@ function updateIslandPositions(state, event) {
 }
 //
 // Check if the user won!
-function updateDidWin(state, event) {
-  const { islands, goal, visitors, didWin } = state;
+function updateDidWin(state) {
+  const { goal, visitors, didWin } = state;
   state.didWin = goal.every(({x, y, spritesheet, sprite}) => {
     return visitors.find((visitor) => {
       return visitor.x === x
@@ -320,7 +318,6 @@ function randomizeVisitors(visitors) {
 // Animations
 // Island Swap
 function animationSwap(state, [bottomIndex, topIndex]) {
-  console.log('animationSwap');
   markStartAnimation(state);
   return Promise.all([
     anime({
@@ -371,7 +368,7 @@ function animationExplode(state) {
   });
   return Promise.all(promiseList).then(() => {
     markEndAnimation(state);
-    document.querySelectorAll('.island').forEach(elm => elm.style.transform = '');
+    document.querySelectorAll('.island').forEach(resetTransforms);
   });
 }
 //
@@ -409,22 +406,20 @@ function animationWin(state) {
 
 //
 // Dialog Animations
-function animationHideDialog() {
+function animationHideDialog(state) {
   markStartAnimation(state);
-  console.log('animationHideDialog START');
   return anime({
     targets: '#elDialog',
     easing: 'easeInQuart',
     duration: ANIMATION_DURATION/2,
     translateX: [0, '-80vw'],
   }).finished.then(() => {
-    console.log('animationHideDialog END');
     markEndAnimation(state);
     state.isDialogOpen = false;
     state.storyIndex += 1;
   });
 }
-function animationShowDialog() {
+function animationShowDialog(state) {
   markStartAnimation(state);
   state.isDialogOpen = true;
   return anime({
@@ -458,6 +453,10 @@ function markEndAnimation(state) {
   state.isAnimating = false;
   document.body.classList.remove('is-animating');
 }
+function resetTransforms(elm) {
+  elm.style.transform = '';
+  return elm;
+}
 
 //
 // Define some levels
@@ -483,10 +482,10 @@ document.body.style.setProperty('--grid--total-columns', FLOOR_SIZE);
 document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 
 // Trigger loading the frist level
-state.handleEvent({
+gameState.handleEvent({
   type: 'initLevel',
   level: levels[0],
 });
-Promise.all([animationRestore(state), animationShowDialog(state)]).then(() => {
-  state.triggerRender();
+Promise.all([animationRestore(gameState), animationShowDialog(gameState)]).then(() => {
+  gameState.triggerRender();
 });
