@@ -3,11 +3,14 @@ NODE_BIN=./node_modules/.bin
 
 all: server
 
-server: build
+server: build lint
 	npx http-server
 
 build: node_modules/
 	npx rollup -c ./rollup.config.js
+
+lint: node_modules/
+	npx eslint src/
 
 node_modules/: package.json
 	npm install

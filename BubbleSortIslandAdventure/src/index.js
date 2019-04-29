@@ -1,4 +1,3 @@
-import { html, render } from 'lighterhtml';
 const FLOOR_SIZE = 5;
 const ANIMATION_DURATION = 2000;
 const ACTIONS = {
