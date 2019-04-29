@@ -1,4 +1,4 @@
-(function () {
+(function (lighterhtml) {
   'use strict';
 
   function _taggedTemplateLiteral(strings, raw) {
@@ -100,7 +100,6 @@
 
     return data;
   }
-
   var FLOOR_SIZE = 5;
   var ANIMATION_DURATION = 2000;
   var ACTIONS = {
@@ -169,7 +168,7 @@
     // Helper to trigger a re-render.
     triggerRender: function triggerRender() {
       this.handleEvent({
-        type: "render"
+        type: 'render'
       });
     }
   }; //
@@ -207,7 +206,7 @@
 
   var renderIsland = function renderIsland(_ref, visitor, key) {
     var sprite = _ref.sprite;
-    return html(_templateObject(), key, sprite, state, ACTIONS.SWAP_ISLANDS, "", !visitor ? '' : renderVisitor(visitor));
+    return lighterhtml.html(_templateObject(), key, sprite, state, ACTIONS.SWAP_ISLANDS, '', !visitor ? '' : renderVisitor(visitor));
   }; //
   // Visitor is just a sprite.
 
@@ -215,7 +214,7 @@
   var renderVisitor = function renderVisitor(_ref2) {
     var sprite = _ref2.sprite,
         spritesheet = _ref2.spritesheet;
-    return html(_templateObject2(), spritesheet, sprite);
+    return lighterhtml.html(_templateObject2(), spritesheet, sprite);
   }; //
   // Render the level
 
@@ -225,8 +224,8 @@
         didWin = state.didWin,
         visitors = state.visitors; // Render the islands
 
-    render(elm, function () {
-      return html(_templateObject3(), islands.map(function (island, idx) {
+    lighterhtml.render(elm, function () {
+      return lighterhtml.html(_templateObject3(), islands.map(function (island, idx) {
         var visitor = state.getVisitorAt(idx);
         return renderIsland(island, visitor, idx);
       }));
@@ -252,9 +251,9 @@
       classList.push('is-light');
     }
 
-    render(elm, function () {
-      return html(_templateObject4(), classList.join(' '), _this, title, paragraphs.map(function (txt) {
-        return html(_templateObject5(), txt);
+    lighterhtml.render(elm, function () {
+      return lighterhtml.html(_templateObject4(), classList.join(' '), _this, title, paragraphs.map(function (txt) {
+        return lighterhtml.html(_templateObject5(), txt);
       }), state, next.action, next.label);
     });
   } //
@@ -514,13 +513,13 @@
       return anime({
         targets: targets,
         duration: ANIMATION_DURATION,
-        translateX: [anime.stagger("-54%", {
+        translateX: [anime.stagger('-54%', {
           start: start.x
         }), 0],
-        translateY: [anime.stagger("23%", {
+        translateY: [anime.stagger('23%', {
           start: start.y
         }), 0],
-        easing: "easeInOutSine"
+        easing: 'easeInOutSine'
       }).finished;
     });
     return Promise.all(promiseList).then(function () {
@@ -559,13 +558,13 @@
       return anime({
         targets: targets,
         duration: ANIMATION_DURATION,
-        translateX: [0, anime.stagger("-54%", {
+        translateX: [0, anime.stagger('-54%', {
           start: start.x
         })],
-        translateY: [0, anime.stagger("23%", {
+        translateY: [0, anime.stagger('23%', {
           start: start.y
         })],
-        easing: "easeInOutSine"
+        easing: 'easeInOutSine'
       }).finished;
     });
     return Promise.all(promiseList).then(function () {
@@ -701,5 +700,5 @@
     state.triggerRender();
   });
 
-}());
+}(lighterhtml));
 //# sourceMappingURL=bundle.js.map

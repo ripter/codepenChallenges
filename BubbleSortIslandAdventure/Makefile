@@ -1,13 +1,15 @@
-.PHONY: all server clean build
+.PHONY: all server clean build deploy
 NODE_BIN=./node_modules/.bin
 
-all: server
+all: deploy server
 
-server: build lint
+server: build
 	npx http-server
 
 build: node_modules/
 	npx rollup -c ./rollup.config.js
+
+deploy: build lint
 
 lint: node_modules/
 	npx eslint src/

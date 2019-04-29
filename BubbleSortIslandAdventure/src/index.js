@@ -1,3 +1,4 @@
+import { html, render } from 'lighterhtml';
 const FLOOR_SIZE = 5;
 const ANIMATION_DURATION = 2000;
 const ACTIONS = {
@@ -7,7 +8,7 @@ const ACTIONS = {
   WAIT: 'WAIT',
   NEXT_PAGE: 'NEXT_PAGE',
   GAME_OVER: 'GAME_OVER',
-}
+};
 const elCanvas = window.canvas;
 const elDialog = window.elDialog;
 //
@@ -54,7 +55,7 @@ const state = window.state = {
   // Helper to trigger a re-render.
   triggerRender() {
     this.handleEvent({
-      type: "render"
+      type: 'render',
     });
   },
 };
@@ -97,7 +98,7 @@ const story = window.story = [
       label: 'Thank you!',
       action: ACTIONS.GAME_OVER,
     },
-  }
+  },
 ];
 
 
@@ -114,7 +115,7 @@ const renderIsland = ({sprite}, visitor, key) => html`<div
   sprite=${sprite}
   onclick=${state}
   action=${ACTIONS.SWAP_ISLANDS}
-  style=${``}
+  style=${''}
   >
   ${!visitor ? '' : renderVisitor(visitor)}
 </div>`;
@@ -145,7 +146,8 @@ function renderDialog(elm, state) {
   const classList = ['nes-dialog', 'is-rounded'];
   if ('evil' === side) {
     classList.push('is-dark');
-  } else {
+  }
+  else {
     classList.push('is-light');
   }
 
@@ -201,7 +203,7 @@ function updateDidWin(state, event) {
       return visitor.x === x
         && visitor.y === y
         && visitor.spritesheet === spritesheet
-        && visitor.sprite === sprite
+        && visitor.sprite === sprite;
     });
   });
 
@@ -362,9 +364,9 @@ function animationExplode(state) {
     return anime({
       targets,
       duration: ANIMATION_DURATION,
-      translateX: [anime.stagger("-54%", { start: start.x }), 0],
-      translateY: [anime.stagger("23%", { start: start.y }), 0],
-      easing: "easeInOutSine"
+      translateX: [anime.stagger('-54%', { start: start.x }), 0],
+      translateY: [anime.stagger('23%', { start: start.y }), 0],
+      easing: 'easeInOutSine',
     }).finished;
   });
   return Promise.all(promiseList).then(() => {
@@ -384,9 +386,9 @@ function animationRestore(state) {
     return anime({
       targets,
       duration: ANIMATION_DURATION,
-      translateX: [0, anime.stagger("-54%", { start: start.x })],
-      translateY: [0, anime.stagger("23%", { start: start.y })],
-      easing: "easeInOutSine"
+      translateX: [0, anime.stagger('-54%', { start: start.x })],
+      translateY: [0, anime.stagger('23%', { start: start.y })],
+      easing: 'easeInOutSine',
     }).finished;
   });
   return Promise.all(promiseList).then(() => {
@@ -416,7 +418,7 @@ function animationHideDialog() {
     duration: ANIMATION_DURATION/2,
     translateX: [0, '-80vw'],
   }).finished.then(() => {
-    console.log('animationHideDialog END')
+    console.log('animationHideDialog END');
     markEndAnimation(state);
     state.isDialogOpen = false;
     state.storyIndex += 1;
@@ -442,7 +444,7 @@ function indexToPoint(index) {
   return {
     x: 0| index % FLOOR_SIZE,
     y: 0| index / FLOOR_SIZE,
-  }
+  };
 }
 function pointToIndex({x, y}) {
   return x + (y * FLOOR_SIZE);
