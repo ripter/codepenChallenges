@@ -1,14 +1,5 @@
 import { html, render } from 'lighterhtml';
-const FLOOR_SIZE = 5;
-const ANIMATION_DURATION = 2000;
-const ACTIONS = {
-  HIDE_UNTIL_CLICK: 'HIDE_UNTIL_CLICK',
-  START_GAME: 'START_GAME',
-  SWAP_ISLANDS: 'SWAP_ISLANDS',
-  WAIT: 'WAIT',
-  NEXT_PAGE: 'NEXT_PAGE',
-  GAME_OVER: 'GAME_OVER',
-};
+import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS } from './consts.js';
 const elCanvas = window.canvas;
 const elDialog = window.elDialog;
 //
