@@ -12,49 +12,67 @@
     GAME_OVER: 'GAME_OVER',
   };
 
-  //
-  // Story Phases!
-  const STORY = [
-    {
-      title: 'Islander:',
-      side: 'good',
-      paragraphs: [
-        'Oh! Hi there! I was just putting together my first island. 😁',
-        'It\'s not much now, but I think it has potental 🥰',
-        'Please, take a look around, but be careful not to poke it too hard, the dirt is still soft.',
-      ],
-      next: {
-        label: 'Let me take a better look',
-        action:  ACTIONS.HIDE_UNTIL_CLICK,
-      },
-    },{
-      title: 'Trouble Maker:',
-      side: 'evil',
-      paragraphs: [
-        'You poked me!',
-        'You look smart, so I\'ll poke your brain!',
-        'Watch as I destroy this pitiful island!',
-        'Bubble sort everything back into place, if you can!',
-      ],
-      next: {
-        label: 'I\'m on it!',
-        action: ACTIONS.START_GAME,
-      },
-    },{
-      title: 'Islander:',
-      side: 'good',
-      paragraphs: [
-        'You did it! 🤩🥳',
-        'I knew you could do it!',
-      ],
-      next: {
-        label: 'Thank you!',
-        action: ACTIONS.GAME_OVER,
-      },
-    },
-  ];
+  /**
+   * Loads the level data
+   * Turns mobs into visitors, islands, and goal
+   * @param  {Object} [state={}]
+   * @param  {Object} level
+   * @return {Object}
+   */
+  function loadLevel(state = {}, level) {
+    const { mobs } = level;
 
-  const elCanvas = window.canvas;
+    // Mob original position is the solution to the puzzle.
+    state.goal = JSON.parse(JSON.stringify(mobs));
+    // Mobs become visitors that are shuffled on the y-axis
+    state.visitors = JSON.parse(JSON.stringify(mobs));
+    // Islands use random sprites.
+    state.islands = Array(FLOOR_SIZE*FLOOR_SIZE).fill().map(() => {
+      return {
+        spritesheet: 'island',
+        sprite: 0|Math.random()*6,
+      };
+    });
+
+    return state;
+  }
+
+  //
+  // Visitor is just a sprite.
+  const renderVisitor = ({sprite, spritesheet}) => lighterhtml.html`<div class="visitor"
+  spritesheet=${spritesheet}
+  sprite=${sprite}>
+</div>`;
+
+  //
+  // An island is a sprite with optional child sprite.
+  const renderIsland = ({sprite}, visitor, handleEvent, key) => lighterhtml.html`<div
+  class="island"
+  data-idx=${key}
+  sprite=${sprite}
+  onclick=${handleEvent}
+  action=${ACTIONS.SWAP_ISLANDS}
+  style=${''}
+  >
+  ${!visitor ? '' : renderVisitor(visitor)}
+</div>`;
+
+  function renderIslands(elm, state) {
+    const { islands } = state;
+    // Render the islands
+    lighterhtml.render(elm, () => lighterhtml.html`<div>
+  ${islands.map((island, idx) => {
+    const visitor = state.getVisitorAt(idx);
+    return renderIsland(island, visitor, state, idx);
+  })}</div>`);
+  }
+
+  function renderGame(state) {
+    const elCanvas = window.canvas;
+    renderIslands(elCanvas, state);
+    // renderDialog(elDialog, this);
+  }
+
   const elDialog = window.elDialog;
   //
   // Game State
@@ -73,14 +91,13 @@
         event.preventDefault();
       }
       // console.log('event', event.type, event);
-      initLevel(this, event);
       handleClick(this, event);
       updateIslandPositions(this, event);
       updateDidWin(this, event);
       // Render the new state
       // console.log('rendering state');
-      renderLevel(elCanvas, this);
-      renderDialog(elDialog, this);
+      // renderLevel(elCanvas, this);
+      // renderDialog(elDialog, this);
     },
     //
     // Returns the the index for the island above.
@@ -104,66 +121,6 @@
       });
     },
   };
-
-
-
-  //
-  // Views/Render functions
-  //
-  //
-  // Visitor is just a sprite.
-  const renderVisitor = ({sprite, spritesheet}) => lighterhtml.html`<div class="visitor"
-  spritesheet=${spritesheet}
-  sprite=${sprite}>
-</div>`;
-  //
-  // An island is a sprite with optional child sprite.
-  const renderIsland = ({sprite}, visitor, key) => lighterhtml.html`<div
-  class="island"
-  data-idx=${key}
-  sprite=${sprite}
-  onclick=${gameState}
-  action=${ACTIONS.SWAP_ISLANDS}
-  style=${''}
-  >
-  ${!visitor ? '' : renderVisitor(visitor)}
-</div>`;
-
-  //
-  // Render the level
-  function renderLevel(elm, state) {
-    const { islands } = state;
-
-    // Render the islands
-    lighterhtml.render(elm, () => lighterhtml.html`<div>
-  ${islands.map((island, idx) => {
-    const visitor = state.getVisitorAt(idx);
-    return renderIsland(island, visitor, idx);
-  })}</div>`);
-  }
-  //
-  // Dialog Box
-  function renderDialog(elm, state) {
-    const { storyIndex } = state;
-    const { title, paragraphs, next, side } = STORY[storyIndex];
-    const classList = ['nes-dialog', 'is-rounded'];
-    if ('evil' === side) {
-      classList.push('is-dark');
-    }
-    else {
-      classList.push('is-light');
-    }
-
-    lighterhtml.render(elm, () => lighterhtml.html`<div class=${classList.join(' ')}>
-    <form method="dialog" ontransitionend=${state}>
-      <p class="title">${title}</p>
-      ${paragraphs.map(txt => lighterhtml.html`<p>${txt}</p>`)}
-      <menu class="dialog-menu">
-        <button onclick=${state} action=${next.action} class="btn nes-btn is-primary">${next.label}</button>
-      </menu>
-    </form>
-  </div>`);
-  }
 
 
   //
@@ -216,26 +173,6 @@
         animationWin(state);
       });
     }
-    return state;
-  }
-
-  //
-  // Loads a new level
-  function initLevel(state, event) {
-    const { type, level } = event;
-    if ('initLevel' !== type) { return state; }
-    const { mobs } = level;
-    // Mob original position is the solution to the puzzle.
-    state.goal = JSON.parse(JSON.stringify(mobs));
-    // Mobs become visitors that are shuffled on the y-axis
-    state.visitors = JSON.parse(JSON.stringify(mobs));
-    // Islands use random sprites.
-    state.islands = Array(FLOOR_SIZE*FLOOR_SIZE).fill().map(() => {
-      return {
-        spritesheet: 'island',
-        sprite: 0|Math.random()*6,
-      };
-    });
     return state;
   }
 
@@ -485,14 +422,9 @@
   document.body.style.setProperty('--grid--total-columns', FLOOR_SIZE);
   document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 
-  // Trigger loading the frist level
-  gameState.handleEvent({
-    type: 'initLevel',
-    level: levels[0],
-  });
-  Promise.all([animationRestore(gameState), animationShowDialog(gameState)]).then(() => {
-    gameState.triggerRender();
-  });
+  // Load the level
+  loadLevel(gameState, levels[0]);
+  renderGame(gameState);
 
 }(lighterhtml));
 //# sourceMappingURL=bundle.js.map

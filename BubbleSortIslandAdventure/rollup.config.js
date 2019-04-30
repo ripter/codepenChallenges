@@ -6,7 +6,7 @@ export default {
 	output: {
 		file: 'public/bundle.js',
 		format: 'iife',
-		sourcemap: true,
+		sourcemap: false,
 		globals: {
       'lighterhtml': 'lighterhtml',
     },
