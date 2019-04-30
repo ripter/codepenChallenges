@@ -1,7 +1,11 @@
 import { renderIslands } from './islands.js';
+import { renderDialog } from './dialog.js';
 
+/**
+ * Render/Update the state on the DOM
+ * @param  {Object} state [description]
+ */
 export function renderGame(state) {
-  const elCanvas = window.canvas;
-  renderIslands(elCanvas, state);
-  // renderDialog(elDialog, this);
+  renderIslands(window.canvas, state);
+  renderDialog(window.elDialog, state);
 }

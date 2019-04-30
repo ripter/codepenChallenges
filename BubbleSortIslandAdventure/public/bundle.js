@@ -12,6 +12,62 @@
     GAME_OVER: 'GAME_OVER',
   };
 
+  //
+  // Island sectors and offsets used in the explode/restore animations
+  const SELECTOR_ISLANDS = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
+    const targets = Array(FLOOR_SIZE)
+      .fill()
+      .map((_, i) => index*FLOOR_SIZE+i)
+      .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '')
+      .substring(1);
+    return {
+      targets,
+      start,
+    };
+  });
+
+  //
+  // Story Phases!
+  const STORY = [
+    {
+      title: 'Islander:',
+      side: 'good',
+      paragraphs: [
+        'Oh! Hi there! I was just putting together my first island. 😁',
+        'It\'s not much now, but I think it has potental 🥰',
+        'Please, take a look around, but be careful not to poke it too hard, the dirt is still soft.',
+      ],
+      next: {
+        label: 'Let me take a better look',
+        action:  ACTIONS.HIDE_UNTIL_CLICK,
+      },
+    },{
+      title: 'Trouble Maker:',
+      side: 'evil',
+      paragraphs: [
+        'You poked me!',
+        'You look smart, so I\'ll poke your brain!',
+        'Watch as I destroy this pitiful island!',
+        'Bubble sort everything back into place, if you can!',
+      ],
+      next: {
+        label: 'I\'m on it!',
+        action: ACTIONS.START_GAME,
+      },
+    },{
+      title: 'Islander:',
+      side: 'good',
+      paragraphs: [
+        'You did it! 🤩🥳',
+        'I knew you could do it!',
+      ],
+      next: {
+        label: 'Thank you!',
+        action: ACTIONS.GAME_OVER,
+      },
+    },
+  ];
+
   /**
    * Loads the level data
    * Turns mobs into visitors, islands, and goal
@@ -35,6 +91,30 @@
     });
 
     return state;
+  }
+
+  function animationRestoreIsland() {
+    const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
+      return anime({
+        targets,
+        duration: ANIMATION_DURATION,
+        translateX: [0, anime.stagger('-54%', { start: start.x })],
+        translateY: [0, anime.stagger('23%', { start: start.y })],
+        easing: 'easeInOutSine',
+      }).finished;
+    });
+    return Promise.all(promiseList);
+  }
+
+  function startGame(state) {
+
+    return Promise.all([
+      animationRestoreIsland(state),
+    ]);
+    // Promise.all([animationRestore(gameState), animationShowDialog(gameState)]).then(() => {
+    //   gameState.triggerRender();
+    // });
+    // return state;
   }
 
   //
@@ -67,13 +147,37 @@
   })}</div>`);
   }
 
-  function renderGame(state) {
-    const elCanvas = window.canvas;
-    renderIslands(elCanvas, state);
-    // renderDialog(elDialog, this);
+  function renderDialog(elm, state) {
+    const { storyIndex } = state;
+    const { title, paragraphs, next, side } = STORY[storyIndex];
+    const classList = ['nes-dialog', 'is-rounded'];
+    if ('evil' === side) {
+      classList.push('is-dark');
+    }
+    else {
+      classList.push('is-light');
+    }
+
+    lighterhtml.render(elm, () => lighterhtml.html`<div class=${classList.join(' ')}>
+    <form method="dialog" ontransitionend=${state}>
+      <p class="title">${title}</p>
+      ${paragraphs.map(txt => lighterhtml.html`<p>${txt}</p>`)}
+      <menu class="dialog-menu">
+        <button onclick=${state} action=${next.action} class="btn nes-btn is-primary">${next.label}</button>
+      </menu>
+    </form>
+  </div>`);
   }
 
-  const elDialog = window.elDialog;
+  /**
+   * Render/Update the state on the DOM
+   * @param  {Object} state [description]
+   */
+  function renderGame(state) {
+    renderIslands(window.canvas, state);
+    renderDialog(window.elDialog, state);
+  }
+
   //
   // Game State
   const gameState = window.gameState = {
@@ -94,10 +198,6 @@
       handleClick(this, event);
       updateIslandPositions(this, event);
       updateDidWin(this, event);
-      // Render the new state
-      // console.log('rendering state');
-      // renderLevel(elCanvas, this);
-      // renderDialog(elDialog, this);
     },
     //
     // Returns the the index for the island above.
@@ -121,11 +221,6 @@
       });
     },
   };
-
-
-  //
-  // Actions/Game Logic
-  //
 
 
   //
@@ -314,25 +409,25 @@
   }
   //
   // Bring all the islands back together animation
-  function animationRestore(state) {
-    markStartAnimation(state);
-    const promiseList = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
-      const targets = Array(FLOOR_SIZE)
-        .fill()
-        .map((_, i) => index*FLOOR_SIZE+i)
-        .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '').substring(1);
-      return anime({
-        targets,
-        duration: ANIMATION_DURATION,
-        translateX: [0, anime.stagger('-54%', { start: start.x })],
-        translateY: [0, anime.stagger('23%', { start: start.y })],
-        easing: 'easeInOutSine',
-      }).finished;
-    });
-    return Promise.all(promiseList).then(() => {
-      markEndAnimation(state);
-    });
-  }
+  // function animationRestore(state) {
+  //   markStartAnimation(state);
+  //   const promiseList = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
+  //     const targets = Array(FLOOR_SIZE)
+  //       .fill()
+  //       .map((_, i) => index*FLOOR_SIZE+i)
+  //       .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '').substring(1);
+  //     return anime({
+  //       targets,
+  //       duration: ANIMATION_DURATION,
+  //       translateX: [0, anime.stagger('-54%', { start: start.x })],
+  //       translateY: [0, anime.stagger('23%', { start: start.y })],
+  //       easing: 'easeInOutSine',
+  //     }).finished;
+  //   });
+  //   return Promise.all(promiseList).then(() => {
+  //     markEndAnimation(state);
+  //   });
+  // }
 
   function animationWin(state) {
     markStartAnimation(state);
@@ -425,6 +520,6 @@
   // Load the level
   loadLevel(gameState, levels[0]);
   renderGame(gameState);
+  startGame(gameState);
 
 }(lighterhtml));
-//# sourceMappingURL=bundle.js.map

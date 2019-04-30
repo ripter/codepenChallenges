@@ -10,6 +10,20 @@ export const ACTIONS = {
 };
 
 //
+// Island sectors and offsets used in the explode/restore animations
+export const SELECTOR_ISLANDS = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
+  const targets = Array(FLOOR_SIZE)
+    .fill()
+    .map((_, i) => index*FLOOR_SIZE+i)
+    .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '')
+    .substring(1);
+  return {
+    targets,
+    start,
+  };
+});
+
+//
 // Story Phases!
 export const STORY = [
   {

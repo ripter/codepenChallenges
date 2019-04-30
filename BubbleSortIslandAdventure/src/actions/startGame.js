@@ -1,7 +1,8 @@
-export function startGame(state) {
+import { animationRestoreIsland } from '../animations/restoreIsland.js';
 
-// Promise.all([animationRestore(gameState), animationShowDialog(gameState)]).then(() => {
-//   gameState.triggerRender();
-// });
-  return state;
+
+export function startGame(state) {
+  return Promise.all([
+    animationRestoreIsland(state),
+  ]);
 }

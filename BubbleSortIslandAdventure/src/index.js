@@ -1,9 +1,7 @@
-import { html, render } from 'lighterhtml';
-import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS, STORY } from './consts.js';
+import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS } from './consts.js';
 import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { renderGame } from './views/index.js';
-const elDialog = window.elDialog;
 //
 // Game State
 const gameState = window.gameState = {
@@ -24,10 +22,6 @@ const gameState = window.gameState = {
     handleClick(this, event);
     updateIslandPositions(this, event);
     updateDidWin(this, event);
-    // Render the new state
-    // console.log('rendering state');
-    // renderLevel(elCanvas, this);
-    // renderDialog(elDialog, this);
   },
   //
   // Returns the the index for the island above.
@@ -51,43 +45,6 @@ const gameState = window.gameState = {
     });
   },
 };
-
-
-
-//
-// Views/Render functions
-//
-
-//
-// Render the level
-//
-// Dialog Box
-function renderDialog(elm, state) {
-  const { storyIndex } = state;
-  const { title, paragraphs, next, side } = STORY[storyIndex];
-  const classList = ['nes-dialog', 'is-rounded'];
-  if ('evil' === side) {
-    classList.push('is-dark');
-  }
-  else {
-    classList.push('is-light');
-  }
-
-  render(elm, () => html`<div class=${classList.join(' ')}>
-    <form method="dialog" ontransitionend=${state}>
-      <p class="title">${title}</p>
-      ${paragraphs.map(txt => html`<p>${txt}</p>`)}
-      <menu class="dialog-menu">
-        <button onclick=${state} action=${next.action} class="btn nes-btn is-primary">${next.label}</button>
-      </menu>
-    </form>
-  </div>`);
-}
-
-
-//
-// Actions/Game Logic
-//
 
 
 //
@@ -274,27 +231,7 @@ function animationExplode(state) {
     document.querySelectorAll('.island').forEach(resetTransforms);
   });
 }
-//
-// Bring all the islands back together animation
-function animationRestore(state) {
-  markStartAnimation(state);
-  const promiseList = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
-    const targets = Array(FLOOR_SIZE)
-      .fill()
-      .map((_, i) => index*FLOOR_SIZE+i)
-      .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '').substring(1);
-    return anime({
-      targets,
-      duration: ANIMATION_DURATION,
-      translateX: [0, anime.stagger('-54%', { start: start.x })],
-      translateY: [0, anime.stagger('23%', { start: start.y })],
-      easing: 'easeInOutSine',
-    }).finished;
-  });
-  return Promise.all(promiseList).then(() => {
-    markEndAnimation(state);
-  });
-}
+
 
 function animationWin(state) {
   markStartAnimation(state);
