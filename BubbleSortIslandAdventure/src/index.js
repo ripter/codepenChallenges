@@ -2,6 +2,8 @@ import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS } from './consts.js';
 import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { renderGame } from './views/index.js';
+import { indexToPoint, pointToIndex } from './point.js';
+
 //
 // Game State
 const gameState = window.gameState = {
@@ -259,32 +261,10 @@ function animationHideDialog(state) {
     state.storyIndex += 1;
   });
 }
-function animationShowDialog(state) {
-  markStartAnimation(state);
-  state.isDialogOpen = true;
-  return anime({
-    targets: '#elDialog',
-    duration: ANIMATION_DURATION,
-    easing: 'easeInQuart',
-    translateX: ['-80vw', 0],
-  }).finished.then(() => {
-    markEndAnimation(state);
-  });
-}
 
 
 //
 // Utils
-function indexToPoint(index) {
-  return {
-    x: 0| index % FLOOR_SIZE,
-    y: 0| index / FLOOR_SIZE,
-  };
-}
-function pointToIndex({x, y}) {
-  return x + (y * FLOOR_SIZE);
-}
-
 function markStartAnimation(state) {
   state.isAnimating = true;
   document.body.classList.add('is-animating');

@@ -106,15 +106,20 @@
     return Promise.all(promiseList);
   }
 
-  function startGame(state) {
+  function openDialog() {
+    return anime({
+      targets: '#elDialog',
+      duration: ANIMATION_DURATION,
+      easing: 'easeInQuart',
+      translateX: ['-80vw', 0],
+    }).finished;
+  }
 
+  function startGame(state) {
     return Promise.all([
-      animationRestoreIsland(state),
+      animationRestoreIsland(),
+      openDialog(),
     ]);
-    // Promise.all([animationRestore(gameState), animationShowDialog(gameState)]).then(() => {
-    //   gameState.triggerRender();
-    // });
-    // return state;
   }
 
   //
@@ -176,6 +181,17 @@
   function renderGame(state) {
     renderIslands(window.canvas, state);
     renderDialog(window.elDialog, state);
+  }
+
+  function indexToPoint(index) {
+    return {
+      x: 0| index % FLOOR_SIZE,
+      y: 0| index / FLOOR_SIZE,
+    };
+  }
+
+  function pointToIndex({x, y}) {
+    return x + (y * FLOOR_SIZE);
   }
 
   //
@@ -407,27 +423,7 @@
       document.querySelectorAll('.island').forEach(resetTransforms);
     });
   }
-  //
-  // Bring all the islands back together animation
-  // function animationRestore(state) {
-  //   markStartAnimation(state);
-  //   const promiseList = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
-  //     const targets = Array(FLOOR_SIZE)
-  //       .fill()
-  //       .map((_, i) => index*FLOOR_SIZE+i)
-  //       .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '').substring(1);
-  //     return anime({
-  //       targets,
-  //       duration: ANIMATION_DURATION,
-  //       translateX: [0, anime.stagger('-54%', { start: start.x })],
-  //       translateY: [0, anime.stagger('23%', { start: start.y })],
-  //       easing: 'easeInOutSine',
-  //     }).finished;
-  //   });
-  //   return Promise.all(promiseList).then(() => {
-  //     markEndAnimation(state);
-  //   });
-  // }
+
 
   function animationWin(state) {
     markStartAnimation(state);
@@ -455,32 +451,10 @@
       state.storyIndex += 1;
     });
   }
-  function animationShowDialog(state) {
-    markStartAnimation(state);
-    state.isDialogOpen = true;
-    return anime({
-      targets: '#elDialog',
-      duration: ANIMATION_DURATION,
-      easing: 'easeInQuart',
-      translateX: ['-80vw', 0],
-    }).finished.then(() => {
-      markEndAnimation(state);
-    });
-  }
 
 
   //
   // Utils
-  function indexToPoint(index) {
-    return {
-      x: 0| index % FLOOR_SIZE,
-      y: 0| index / FLOOR_SIZE,
-    };
-  }
-  function pointToIndex({x, y}) {
-    return x + (y * FLOOR_SIZE);
-  }
-
   function markStartAnimation(state) {
     state.isAnimating = true;
     document.body.classList.add('is-animating');
