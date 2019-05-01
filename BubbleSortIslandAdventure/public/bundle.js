@@ -221,8 +221,6 @@
       elm.dataset.zIndex = elm.style.zIndex;
       return elm;
     });
-    // const oldZIndex = Array.from(document.querySelectorAll(selectorIslands)).map(elm => elm.style.zIndex);
-    // console.log('oldZIndex', oldZIndex);
     return Promise.all([
       anime({
         autoplay: true,
@@ -257,7 +255,6 @@
 
   function resetTransforms(elm) {
     const { zIndex } = elm.dataset;
-    console.log('elm', zIndex, elm);
     elm.style.transform = '';
     elm.style.zIndex = zIndex;
     return elm;
@@ -293,9 +290,9 @@
     }).then(() => {
       // Did the user win?
       if (state.didWin) {
-        console.log('You Won!!');
         return winGame(state);
       }
+      return state;
     });
   });
 

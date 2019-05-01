@@ -23,9 +23,9 @@ export const swapIslands = wrapForAnimation((state, bottomIndex) => {
   }).then(() => {
     // Did the user win?
     if (state.didWin) {
-      console.log('You Won!!');
       return winGame(state);
     }
+    return state;
   });
 });
 
