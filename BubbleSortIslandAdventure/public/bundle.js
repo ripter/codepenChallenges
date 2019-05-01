@@ -271,7 +271,12 @@
     return x + (y * FLOOR_SIZE);
   }
 
-  const swapIslands = wrapForAnimation((state, bottomIndex) => {
+  /**
+   * Swaps the island at bottomIndex with the island above it.
+   * aka, a single step in a bubble sort
+   * @return {Promise}
+   */
+  const bubbleIsland = wrapForAnimation((state, bottomIndex) => {
     const { goal, visitors } = state;
     const topIndex = state.getPairedIndex(bottomIndex);
     // Skip invalid pairs (like the top islands)
@@ -473,7 +478,7 @@
         return destroyIsland(state);
       case ACTIONS.SWAP_ISLANDS:
         bottomIndex = parseInt(currentTarget.dataset.idx, 10);
-        return swapIslands(state, bottomIndex);
+        return bubbleIsland(state, bottomIndex);
       default:
         // console.warn('unknown action', nextAction);
     }

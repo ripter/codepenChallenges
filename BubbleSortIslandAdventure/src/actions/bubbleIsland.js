@@ -4,7 +4,12 @@ import { animateSwapIslands } from '../animations/swapIslands.js';
 import { indexToPoint } from '../point.js';
 
 
-export const swapIslands = wrapForAnimation((state, bottomIndex) => {
+/**
+ * Swaps the island at bottomIndex with the island above it.
+ * aka, a single step in a bubble sort
+ * @return {Promise}
+ */
+export const bubbleIsland = wrapForAnimation((state, bottomIndex) => {
   const { goal, visitors } = state;
   const topIndex = state.getPairedIndex(bottomIndex);
   // Skip invalid pairs (like the top islands)

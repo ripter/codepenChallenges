@@ -3,7 +3,7 @@ import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
 import { destroyIsland } from './actions/destroyIsland.js';
-import { swapIslands } from './actions/swapIslands.js';
+import { bubbleIsland } from './actions/bubbleIsland.js';
 import { nextStoryDialog } from './actions/nextStoryDialog.js';
 import { renderGame } from './views/renderGame.js';
 import { indexToPoint, pointToIndex } from './point.js';
@@ -82,7 +82,7 @@ function handleClick(state, event) {
       return destroyIsland(state);
     case ACTIONS.SWAP_ISLANDS:
       bottomIndex = parseInt(currentTarget.dataset.idx, 10);
-      return swapIslands(state, bottomIndex);
+      return bubbleIsland(state, bottomIndex);
     default:
       // console.warn('unknown action', nextAction);
   }
