@@ -1,4 +1,4 @@
-import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS } from './consts.js';
+import { FLOOR_SIZE, ACTIONS } from './consts.js';
 import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
@@ -54,17 +54,18 @@ const gameState = window.gameState = {
     if (this.onChange) {
       this.onChange(this);
     }
-  }
+  },
 };
 
 
 
 function handleClick(state, event) {
-  const { lastAction, visitors, isDialogOpen, isAnimating } = state;
+  const { lastAction, isAnimating } = state;
   const { currentTarget, type } = event;
   // Only respond to clicks when not animating.
   if ('click' !== type || isAnimating) { return state; }
   const nextAction = currentTarget.getAttribute('action');
+  let bottomIndex;
 
   state.lastAction = nextAction;
 
@@ -74,44 +75,21 @@ function handleClick(state, event) {
     return nextStoryDialog(state);
   }
 
-
   switch (nextAction) {
     case ACTIONS.PREVIEW_ISLAND:
       return previewIsland(state);
     case ACTIONS.DESTROY_ISLAND:
       return destroyIsland(state);
     case ACTIONS.SWAP_ISLANDS:
-      const bottomIndex = parseInt(currentTarget.dataset.idx, 10);
+      bottomIndex = parseInt(currentTarget.dataset.idx, 10);
       return swapIslands(state, bottomIndex);
     default:
-      console.warn('unknown action', nextAction);
-  }
-
-
-  debugger;
-  if (nextAction === ACTIONS.GAME_OVER) {
-    // just close the dialog so the user can see the island.
-    animationHideDialog(state);
+      // console.warn('unknown action', nextAction);
   }
 
   return state;
 }
 
-function animationWin(state) {
-  markStartAnimation(state);
-  const promiseList = [
-    animationRestore(state),
-    animationShowDialog(state),
-  ];
-  return Promise.all(promiseList).then(() => {
-    markEndAnimation(state);
-  });
-}
-
-
-
-//
-// Utils
 
 //
 // Define some levels

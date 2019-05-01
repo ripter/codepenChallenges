@@ -251,7 +251,7 @@
   }
 
   const swapIslands = wrapForAnimation((state, bottomIndex) => {
-    const { islands, goal, visitors } = state;
+    const { goal, visitors } = state;
     const topIndex = state.getPairedIndex(bottomIndex);
     // Skip invalid pairs (like the top islands)
     if (topIndex < 0) { return state; }
@@ -296,76 +296,6 @@
       });
     });
   }
-
-  //
-  // Check if the user won!
-  /*
-  function updateDidWin(state) {
-    const { goal, visitors, didWin } = state;
-    state.didWin = goal.every(({x, y, spritesheet, sprite}) => {
-      return visitors.find((visitor) => {
-        return visitor.x === x
-          && visitor.y === y
-          && visitor.spritesheet === spritesheet
-          && visitor.sprite === sprite;
-      });
-    });
-
-    // If we are switching to win for the first time.
-    if (!didWin && state.didWin) {
-      // ugly hack, we need to wait until after render to trigger the animation.
-      setTimeout(() => {
-        animationWin(state);
-      });
-    }
-    return state;
-  }
-  */
-
-
-  /*
-  if (nextAction === ACTIONS.SWAP_ISLANDS && !isDialogOpen) {
-    const bottomIndex = parseInt(currentTarget.dataset.idx, 10);
-    const topIndex = state.getPairedIndex(bottomIndex);
-    // Skip invalid pairs (like the top islands)
-    if (topIndex < 0) { return state; }
-    // Start the animation.
-    animationSwap(state, [bottomIndex, topIndex]).then(() => {
-      state.swapIndexes = [bottomIndex, topIndex];
-      // re-render with the new state.
-      state.triggerRender();
-    });
-  }
-  */
-
-
-  //
-  // updates the position of islands in the state.islands array.
-  // Swaps the two islands in state.swapIndexes.
-  /*
-  function updateIslandPositions(state) {
-    const { swapIndexes, islands } = state;
-    if (swapIndexes.length !== 2) { return state; }
-    const bottomIsland = islands[swapIndexes[0]];
-    const topIsland = islands[swapIndexes[1]];
-
-    // Swap the islands!
-    islands.splice(swapIndexes[1], 1, bottomIsland);
-    islands.splice(swapIndexes[0], 1, topIsland);
-    // Swap the Visitors x,y positions
-    const bottomVisitor = state.getVisitorAt(swapIndexes[0]);
-    const topVisitor = state.getVisitorAt(swapIndexes[1]);
-    if (bottomVisitor) {
-      Object.assign(bottomVisitor, indexToPoint(swapIndexes[1]));
-    }
-    if (topVisitor) {
-      Object.assign(topVisitor, indexToPoint(swapIndexes[0]));
-    }
-    // clear the indexes
-    swapIndexes.length = 0;
-    return state;
-  }
-  */
 
   const nextStoryDialog = wrapForAnimation((state) => {
     const { storyIndex } = state;
@@ -486,17 +416,18 @@
       if (this.onChange) {
         this.onChange(this);
       }
-    }
+    },
   };
 
 
 
   function handleClick(state, event) {
-    const { lastAction, visitors, isDialogOpen, isAnimating } = state;
+    const { lastAction, isAnimating } = state;
     const { currentTarget, type } = event;
     // Only respond to clicks when not animating.
     if ('click' !== type || isAnimating) { return state; }
     const nextAction = currentTarget.getAttribute('action');
+    let bottomIndex;
 
     state.lastAction = nextAction;
 
@@ -506,33 +437,21 @@
       return nextStoryDialog(state);
     }
 
-
     switch (nextAction) {
       case ACTIONS.PREVIEW_ISLAND:
         return previewIsland(state);
       case ACTIONS.DESTROY_ISLAND:
         return destroyIsland(state);
       case ACTIONS.SWAP_ISLANDS:
-        const bottomIndex = parseInt(currentTarget.dataset.idx, 10);
+        bottomIndex = parseInt(currentTarget.dataset.idx, 10);
         return swapIslands(state, bottomIndex);
       default:
-        console.warn('unknown action', nextAction);
-    }
-
-
-    debugger;
-    if (nextAction === ACTIONS.GAME_OVER) {
-      // just close the dialog so the user can see the island.
-      animationHideDialog(state);
+        // console.warn('unknown action', nextAction);
     }
 
     return state;
   }
 
-
-
-  //
-  // Utils
 
   //
   // Define some levels
