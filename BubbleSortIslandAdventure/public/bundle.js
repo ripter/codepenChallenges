@@ -28,6 +28,9 @@
   //
   // Story!
   const STORY = [
+    //
+    // Level 0
+    //
     {
       title: 'Islander Sue:',
       side: 'good',
@@ -75,7 +78,11 @@
         label: 'Bring it!',
         action: ACTIONS.NEXT_LEVEL,
       },
-    },{
+    },
+    //
+    // Level 1
+    //
+    {
       title: 'Islander Roy:',
       side: 'good',
       paragraphs: [
@@ -97,18 +104,79 @@
         label: 'I\'m on it!',
         action: ACTIONS.DESTROY_ISLAND,
       },
+    }, {
+      title: 'Islander Roy:',
+      side: 'good',
+      paragraphs: [
+        'Wow, you are incredible!',
+        'Are you sure you are even human?',
+      ],
+      next: {
+        label: 'Glad I could help!',
+        action: ACTIONS.NEXT_STORY,
+      },
+    },{
+      title: 'Trouble Maker:',
+      side: 'evil',
+      paragraphs: [
+        'How dare you? 😡',
+        'Who do you think you are?',
+        'Let\'s see you handle this island! 😈',
+      ],
+      next: {
+        label: 'Stop destroying people\'s islands!',
+        action: ACTIONS.NEXT_LEVEL,
+      },
     },
+    //
+    // Level 2
+    //
+    {
+      title: 'Islander Jill:',
+      side: 'good',
+      paragraphs: [
+        'Welcome, both of you. 🙂',
+        'I have heard about your skill from Sue and Roy',
+      ],
+      next: {
+        label: 'You have?',
+        action: ACTIONS.PREVIEW_ISLAND,
+      },
+    },{
+      title: 'Trouble Maker:',
+      side: 'evil',
+      paragraphs: [
+        'Watch as I destroy this amazing island!',
+        'Bubble sort everything back into place, if you can!',
+      ],
+      next: {
+        label: 'I\'m on it!',
+        action: ACTIONS.DESTROY_ISLAND,
+      },
+    }, {
+      title: 'Islander Jill:',
+      side: 'good',
+      paragraphs: [
+        'You really are as good as they said.',
+        'Thank you for restoring the islands.',
+        'I hope you have enjoyed playing my little game.',
+      ],
+      next: {
+        label: 'It was fun!',
+        action: ACTIONS.GAME_OVER,
+      },
+    }
   ];
 
   //
   // Define the levels
   const LEVELS = [{
     mobs: [
-      // {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
-      // {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
-      // {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
-      // {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
-      // {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
+      {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
+      {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
+      {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
+      {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
+      {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
       {x: 0, y: 0, spritesheet: 'img-golem-1', sprite: 'forward'},
     ],
   }, {
@@ -121,6 +189,18 @@
       {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
       {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 0},
       {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
+      {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
+    ],
+  }, {
+    mobs: [
+      {x: 4, y: 0, spritesheet: 'img-water', sprite: 3},
+      {x: 3, y: 0, spritesheet: 'img-water', sprite: 5},
+      {x: 4, y: 1, spritesheet: 'img-water', sprite: 1},
+      {x: 3, y: 1, spritesheet: 'img-water', sprite: 0},
+      {x: 4, y: 2, spritesheet: 'img-water', sprite: 4},
+      {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
+      {x: 0, y: 0, spritesheet: 'img-visitor', sprite: 0},
+      {x: 1, y: 0, spritesheet: 'img-visitor', sprite: 1},
       {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
     ],
   }];
