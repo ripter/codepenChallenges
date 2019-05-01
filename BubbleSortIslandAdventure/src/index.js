@@ -159,19 +159,6 @@ function handleClick(state, event) {
 }
 
 
-//
-// Randomizes the visitors along the y-axis only.
-function randomizeVisitors(visitors) {
-  // Create a random list of indexes for each column.
-  const randomIndexes = Array(FLOOR_SIZE).fill().map(() => {
-    return Array(FLOOR_SIZE).fill().map((_, i) => i).sort(() => 0|Math.random()*3-2);
-  });
-  // Give each visitor a new random y position from the random list.
-  return visitors.map((visitor) => {
-    visitor.y = randomIndexes[visitor.x].pop();
-    return visitor;
-  });
-}
 
 
 
