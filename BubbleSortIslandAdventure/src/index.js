@@ -1,10 +1,11 @@
-import { FLOOR_SIZE, ACTIONS } from './consts.js';
+import { FLOOR_SIZE, ACTIONS, LEVELS } from './consts.js';
 import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
 import { destroyIsland } from './actions/destroyIsland.js';
 import { bubbleIsland } from './actions/bubbleIsland.js';
 import { nextStoryDialog } from './actions/nextStoryDialog.js';
+import { nextLevel } from './actions/nextLevel.js';
 import { renderGame } from './views/renderGame.js';
 import { indexToPoint, pointToIndex } from './point.js';
 
@@ -15,6 +16,7 @@ const gameState = window.gameState = {
   isAnimating: false,
   islands: [],
   storyIndex: 0,
+  level: 0,
   visitors: [],
   //
   // Handle's events, updates state, and triggers re-render
@@ -74,38 +76,17 @@ function handleClick(state, event) {
     case ACTIONS.SWAP_ISLANDS:
       bottomIndex = parseInt(currentTarget.dataset.idx, 10);
       return bubbleIsland(state, bottomIndex);
+    case ACTIONS.NEXT_STORY:
+      return nextStoryDialog(state);
+    case ACTIONS.NEXT_LEVEL:
+      return nextLevel(state);
     default:
-      // console.warn('unknown action', nextAction);
+      console.warn('unknown action', nextAction);
   }
 
   return state;
 }
 
-
-//
-// Define some levels
-const levels = [{
-  mobs: [
-    {x: 4, y: 0, spritesheet: 'img-water', sprite: 3},
-    {x: 3, y: 0, spritesheet: 'img-water', sprite: 5},
-    {x: 4, y: 1, spritesheet: 'img-water', sprite: 1},
-    {x: 3, y: 1, spritesheet: 'img-water', sprite: 0},
-    {x: 4, y: 2, spritesheet: 'img-water', sprite: 4},
-    {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
-
-    {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 0},
-    {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
-    {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
-  ],
-}, {
-  mobs: [
-    {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
-    {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
-    {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
-    {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
-    {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
-  ],
-}];
 
 //
 // Main
@@ -116,6 +97,6 @@ document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 // Re-render on state change
 gameState.onChange = renderGame;
 // Load and start the level
-loadLevel(gameState, levels[1]);
+loadLevel(gameState, LEVELS[gameState.level]);
 renderGame(gameState);
 startGame(gameState);

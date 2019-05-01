@@ -6,12 +6,9 @@
   const ACTIONS = {
     PREVIEW_ISLAND: 'PREVIEW_ISLAND',
     DESTROY_ISLAND: 'DESTROY_ISLAND',
-    
-    START_GAME: 'START_GAME',
     SWAP_ISLANDS: 'SWAP_ISLANDS',
-    WAIT: 'WAIT',
-    NEXT_PAGE: 'NEXT_PAGE',
-    GAME_OVER: 'GAME_OVER',
+    NEXT_STORY: 'NEXT_STORY',
+    NEXT_LEVEL: 'NEXT_LEVEL',
   };
 
   //
@@ -29,10 +26,10 @@
   });
 
   //
-  // Story Phases!
+  // Story!
   const STORY = [
     {
-      title: 'Islander:',
+      title: 'Islander Sue:',
       side: 'good',
       paragraphs: [
         'Oh! Hi there! I was just putting together my first island. 😁',
@@ -57,18 +54,76 @@
         action: ACTIONS.DESTROY_ISLAND,
       },
     },{
-      title: 'Islander:',
+      title: 'Islander Sue:',
       side: 'good',
       paragraphs: [
         'You did it! 🤩🥳',
-        'I knew you could do it!',
+        'You are amazing at this! I bet you could fix all the islands!',
       ],
       next: {
         label: 'Thank you!',
-        action: ACTIONS.GAME_OVER,
+        action: ACTIONS.NEXT_STORY,
+      },
+    },{
+      title: 'Trouble Maker:',
+      side: 'evil',
+      paragraphs: [
+        'Oh you are sooooo smart are you? 👿',
+        'Let\'s see you handle this island! 😈',
+      ],
+      next: {
+        label: 'Bring it!',
+        action: ACTIONS.NEXT_LEVEL,
+      },
+    },{
+      title: 'Islander Roy:',
+      side: 'good',
+      paragraphs: [
+        'Oh no! the Trouble Maker is back! 😱',
+        'Please leave me and my island alone!',
+      ],
+      next: {
+        label: 'I am here to help!',
+        action: ACTIONS.PREVIEW_ISLAND,
+      },
+    },{
+      title: 'Trouble Maker:',
+      side: 'evil',
+      paragraphs: [
+        'Watch as I destroy this mediocre island!',
+        'Bubble sort everything back into place, if you can!',
+      ],
+      next: {
+        label: 'I\'m on it!',
+        action: ACTIONS.DESTROY_ISLAND,
       },
     },
   ];
+
+  //
+  // Define the levels
+  const LEVELS = [{
+    mobs: [
+      // {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
+      // {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
+      // {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
+      // {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
+      // {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
+      {x: 0, y: 0, spritesheet: 'img-golem-1', sprite: 'forward'},
+    ],
+  }, {
+    mobs: [
+      {x: 4, y: 0, spritesheet: 'img-water', sprite: 3},
+      {x: 3, y: 0, spritesheet: 'img-water', sprite: 5},
+      {x: 4, y: 1, spritesheet: 'img-water', sprite: 1},
+      {x: 3, y: 1, spritesheet: 'img-water', sprite: 0},
+      {x: 4, y: 2, spritesheet: 'img-water', sprite: 4},
+      {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
+      {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 0},
+      {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
+      {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
+    ],
+  }];
 
   /**
    * Loads the level data
@@ -364,6 +419,28 @@
     ]);
   });
 
+  /**
+   * Restore the grid back into one island.
+   * Advance the story and open the dialog.
+   * @return {Promise}
+   */
+  const nextLevel = wrapForAnimation((state) => {
+    const level = state.level + 1;
+    const storyIndex = state.storyIndex + 1;
+
+    return Promise.all([
+      animateCloseDialog(),
+      loadLevel(state, LEVELS[level]),
+    ]).then(() => {
+      state.set({
+        level,
+        storyIndex,
+      });
+      return startGame(state);
+      // return animateOpenDialog();
+    });
+  });
+
   //
   // Visitor is just a sprite.
   const renderVisitor = ({sprite, spritesheet}) => lighterhtml.html`<div class="visitor"
@@ -432,6 +509,7 @@
     isAnimating: false,
     islands: [],
     storyIndex: 0,
+    level: 0,
     visitors: [],
     //
     // Handle's events, updates state, and triggers re-render
@@ -491,38 +569,17 @@
       case ACTIONS.SWAP_ISLANDS:
         bottomIndex = parseInt(currentTarget.dataset.idx, 10);
         return bubbleIsland(state, bottomIndex);
+      case ACTIONS.NEXT_STORY:
+        return nextStoryDialog(state);
+      case ACTIONS.NEXT_LEVEL:
+        return nextLevel(state);
       default:
-        // console.warn('unknown action', nextAction);
+        console.warn('unknown action', nextAction);
     }
 
     return state;
   }
 
-
-  //
-  // Define some levels
-  const levels = [{
-    mobs: [
-      {x: 4, y: 0, spritesheet: 'img-water', sprite: 3},
-      {x: 3, y: 0, spritesheet: 'img-water', sprite: 5},
-      {x: 4, y: 1, spritesheet: 'img-water', sprite: 1},
-      {x: 3, y: 1, spritesheet: 'img-water', sprite: 0},
-      {x: 4, y: 2, spritesheet: 'img-water', sprite: 4},
-      {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
-
-      {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 0},
-      {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
-      {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
-    ],
-  }, {
-    mobs: [
-      {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
-      {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
-      {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
-      {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
-      {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
-    ],
-  }];
 
   //
   // Main
@@ -533,7 +590,7 @@
   // Re-render on state change
   gameState.onChange = renderGame;
   // Load and start the level
-  loadLevel(gameState, levels[1]);
+  loadLevel(gameState, LEVELS[gameState.level]);
   renderGame(gameState);
   startGame(gameState);
 

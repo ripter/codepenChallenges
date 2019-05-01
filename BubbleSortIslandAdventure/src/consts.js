@@ -3,12 +3,9 @@ export const ANIMATION_DURATION = 2000;
 export const ACTIONS = {
   PREVIEW_ISLAND: 'PREVIEW_ISLAND',
   DESTROY_ISLAND: 'DESTROY_ISLAND',
-  
-  START_GAME: 'START_GAME',
   SWAP_ISLANDS: 'SWAP_ISLANDS',
-  WAIT: 'WAIT',
-  NEXT_PAGE: 'NEXT_PAGE',
-  GAME_OVER: 'GAME_OVER',
+  NEXT_STORY: 'NEXT_STORY',
+  NEXT_LEVEL: 'NEXT_LEVEL',
 };
 
 //
@@ -26,10 +23,10 @@ export const SELECTOR_ISLANDS = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, 
 });
 
 //
-// Story Phases!
+// Story!
 export const STORY = [
   {
-    title: 'Islander:',
+    title: 'Islander Sue:',
     side: 'good',
     paragraphs: [
       'Oh! Hi there! I was just putting together my first island. 😁',
@@ -54,15 +51,73 @@ export const STORY = [
       action: ACTIONS.DESTROY_ISLAND,
     },
   },{
-    title: 'Islander:',
+    title: 'Islander Sue:',
     side: 'good',
     paragraphs: [
       'You did it! 🤩🥳',
-      'I knew you could do it!',
+      'You are amazing at this! I bet you could fix all the islands!',
     ],
     next: {
       label: 'Thank you!',
-      action: ACTIONS.GAME_OVER,
+      action: ACTIONS.NEXT_STORY,
+    },
+  },{
+    title: 'Trouble Maker:',
+    side: 'evil',
+    paragraphs: [
+      'Oh you are sooooo smart are you? 👿',
+      'Let\'s see you handle this island! 😈',
+    ],
+    next: {
+      label: 'Bring it!',
+      action: ACTIONS.NEXT_LEVEL,
+    },
+  },{
+    title: 'Islander Roy:',
+    side: 'good',
+    paragraphs: [
+      'Oh no! the Trouble Maker is back! 😱',
+      'Please leave me and my island alone!',
+    ],
+    next: {
+      label: 'I am here to help!',
+      action: ACTIONS.PREVIEW_ISLAND,
+    },
+  },{
+    title: 'Trouble Maker:',
+    side: 'evil',
+    paragraphs: [
+      'Watch as I destroy this mediocre island!',
+      'Bubble sort everything back into place, if you can!',
+    ],
+    next: {
+      label: 'I\'m on it!',
+      action: ACTIONS.DESTROY_ISLAND,
     },
   },
 ];
+
+//
+// Define the levels
+export const LEVELS = [{
+  mobs: [
+    // {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
+    // {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
+    // {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
+    // {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
+    // {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
+    {x: 0, y: 0, spritesheet: 'img-golem-1', sprite: 'forward'},
+  ],
+}, {
+  mobs: [
+    {x: 4, y: 0, spritesheet: 'img-water', sprite: 3},
+    {x: 3, y: 0, spritesheet: 'img-water', sprite: 5},
+    {x: 4, y: 1, spritesheet: 'img-water', sprite: 1},
+    {x: 3, y: 1, spritesheet: 'img-water', sprite: 0},
+    {x: 4, y: 2, spritesheet: 'img-water', sprite: 4},
+    {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
+    {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 0},
+    {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
+    {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
+  ],
+}];
