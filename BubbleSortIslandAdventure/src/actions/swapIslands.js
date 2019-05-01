@@ -1,3 +1,4 @@
+import { winGame } from './winGame.js';
 import { wrapForAnimation } from '../markAnimation.js';
 import { animateSwapIslands } from '../animations/swapIslands.js';
 import { indexToPoint } from '../point.js';
@@ -12,6 +13,8 @@ export const swapIslands = wrapForAnimation((state, bottomIndex) => {
   return Promise.all([
     animateSwapIslands(bottomIndex, topIndex),
   ]).then(() => {
+    // const islands = swap(state, bottomIndex, topIndex);
+    // const didWin = checkDidWin(goal, visitors);
     // Update the state to reflect the visual change
     state.set({
       islands: swap(state, bottomIndex, topIndex),
@@ -21,6 +24,7 @@ export const swapIslands = wrapForAnimation((state, bottomIndex) => {
     // Did the user win?
     if (state.didWin) {
       console.log('You Won!!');
+      return winGame(state);
     }
   });
 });

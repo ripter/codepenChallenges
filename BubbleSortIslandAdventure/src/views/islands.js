@@ -16,7 +16,7 @@ const renderIsland = ({sprite}, visitor, handleEvent, key) => html`<div
   sprite=${sprite}
   onclick=${handleEvent}
   action=${ACTIONS.SWAP_ISLANDS}
-  style=${''}
+  style=${`z-index: ${100+key}`}
   >
   ${!visitor ? '' : renderVisitor(visitor)}
 </div>`;

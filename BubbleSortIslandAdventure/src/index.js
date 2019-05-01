@@ -106,6 +106,14 @@ const levels = [{
     {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
     {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
   ],
+}, {
+  mobs: [
+    {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
+    {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
+    {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
+    {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
+    {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
+  ],
 }];
 
 //
@@ -117,6 +125,6 @@ document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 // Re-render on state change
 gameState.onChange = renderGame;
 // Load and start the level
-loadLevel(gameState, levels[0]);
+loadLevel(gameState, levels[1]);
 renderGame(gameState);
 startGame(gameState);

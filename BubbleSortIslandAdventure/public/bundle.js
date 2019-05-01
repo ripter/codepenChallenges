@@ -203,39 +203,63 @@
     });
   }
 
+  const winGame = wrapForAnimation((state) => {
+    const { storyIndex } = state;
+    state.set({
+      storyIndex: storyIndex + 1,
+    });
+    return Promise.all([
+      restoreIsland(),
+      openDialog(),
+    ]);
+  });
+
   function animateSwapIslands(bottomIndex, topIndex) {
+    const selectorIslands = `.island:nth-child(${topIndex+1}), .island:nth-child(${bottomIndex+1}`;
+    // Save the current z-index so we can restore it after the animation.
+    document.querySelectorAll(selectorIslands).forEach((elm) => {
+      elm.dataset.zIndex = elm.style.zIndex;
+      return elm;
+    });
+    // const oldZIndex = Array.from(document.querySelectorAll(selectorIslands)).map(elm => elm.style.zIndex);
+    // console.log('oldZIndex', oldZIndex);
     return Promise.all([
       anime({
+        autoplay: true,
         targets: `.island:nth-child(${topIndex+1})`,
         delay: 0,
         duration: ANIMATION_DURATION,
         easing: 'easeOutExpo',
         keyframes: [
-          {translateX: '0%', translateY: '0%', 'z-index': 110},
+          {translateX: '0%', translateY: '0%', 'z-index': 510},
           {translateX: '50%', translateY: '50%'},
-          {translateX: '0%', translateY: '100%', 'z-index': 100},
+          {translateX: '0%', translateY: '100%', 'z-index': 500},
         ],
       }).finished,
       anime({
+        autoplay: true,
         targets: `.island:nth-child(${bottomIndex+1})`,
         duration: ANIMATION_DURATION,
         easing: 'easeOutCirc',
         delay: 0,
         keyframes: [
-          {translateX: '0%', translateY: '0%', 'z-index': 110},
+          {translateX: '0%', translateY: '0%', 'z-index': 510},
           {translateX: '-50%', translateY: '-50%'},
-          {translateX: '0%', translateY: '-100%', 'z-index': 100},
+          {translateX: '0%', translateY: '-100%', 'z-index': 500},
         ],
       }).finished,
     ]).then(() => {
       // remove the styles anime added by the animation.
       // it conflicts with the smart-updating re-rendering and causes visual issues.
-      document.querySelectorAll(`.island:nth-child(${topIndex+1}), .island:nth-child(${bottomIndex+1}`).forEach(resetTransforms);
+      document.querySelectorAll(selectorIslands).forEach(resetTransforms);
     });
   }
 
   function resetTransforms(elm) {
+    const { zIndex } = elm.dataset;
+    console.log('elm', zIndex, elm);
     elm.style.transform = '';
+    elm.style.zIndex = zIndex;
     return elm;
   }
 
@@ -259,6 +283,8 @@
     return Promise.all([
       animateSwapIslands(bottomIndex, topIndex),
     ]).then(() => {
+      // const islands = swap(state, bottomIndex, topIndex);
+      // const didWin = checkDidWin(goal, visitors);
       // Update the state to reflect the visual change
       state.set({
         islands: swap(state, bottomIndex, topIndex),
@@ -268,6 +294,7 @@
       // Did the user win?
       if (state.didWin) {
         console.log('You Won!!');
+        return winGame(state);
       }
     });
   });
@@ -329,7 +356,7 @@
   sprite=${sprite}
   onclick=${handleEvent}
   action=${ACTIONS.SWAP_ISLANDS}
-  style=${''}
+  style=${`z-index: ${100+key}`}
   >
   ${!visitor ? '' : renderVisitor(visitor)}
 </div>`;
@@ -473,6 +500,14 @@
       {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 1},
       {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
     ],
+  }, {
+    mobs: [
+      {x: 0, y: 2, spritesheet: 'img-number', sprite: 1},
+      {x: 1, y: 2, spritesheet: 'img-number', sprite: 2},
+      {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
+      {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
+      {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
+    ],
   }];
 
   //
@@ -484,7 +519,7 @@
   // Re-render on state change
   gameState.onChange = renderGame;
   // Load and start the level
-  loadLevel(gameState, levels[0]);
+  loadLevel(gameState, levels[1]);
   renderGame(gameState);
   startGame(gameState);
 
