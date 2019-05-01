@@ -11,10 +11,10 @@ import { indexToPoint, pointToIndex } from './point.js';
 //
 // Game State
 const gameState = window.gameState = {
-  isDialogOpen: false,
-  storyIndex: 0,
-  islands: [],
   goal: [],
+  isAnimating: false,
+  islands: [],
+  storyIndex: 0,
   visitors: [],
   //
   // Handle's events, updates state, and triggers re-render
