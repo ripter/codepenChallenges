@@ -1,15 +1,6 @@
-import { ANIMATION_DURATION, SELECTOR_ISLANDS } from '../consts.js';
+import { ANIMATION_DURATION } from '../consts.js';
 
-export function swapIslands() {
-
-}
-
-
-//
-// Animations
-// Island Swap
-function animationSwap(state, [bottomIndex, topIndex]) {
-  markStartAnimation(state);
+export function animateSwapIslands(bottomIndex, topIndex) {
   return Promise.all([
     anime({
       targets: `.island:nth-child(${topIndex+1})`,
@@ -34,8 +25,13 @@ function animationSwap(state, [bottomIndex, topIndex]) {
       ],
     }).finished,
   ]).then(() => {
-    // remove the styles anime added for the animation. State will have the island in the new position on re-render.
-    document.querySelectorAll(`.island:nth-child(${topIndex+1}), .island:nth-child(${bottomIndex+1}`).forEach(elm => elm.removeAttribute('style'));
-    markEndAnimation(state);
+    // remove the styles anime added by the animation.
+    // it conflicts with the smart-updating re-rendering and causes visual issues.
+    document.querySelectorAll(`.island:nth-child(${topIndex+1}), .island:nth-child(${bottomIndex+1}`).forEach(resetTransforms);
   });
+}
+
+function resetTransforms(elm) {
+  elm.style.transform = '';
+  return elm;
 }

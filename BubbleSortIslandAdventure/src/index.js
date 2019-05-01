@@ -3,6 +3,7 @@ import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
 import { destroyIsland } from './actions/destroyIsland.js';
+import { swapIslands } from './actions/swapIslands.js';
 import { nextStoryDialog } from './actions/nextStoryDialog.js';
 import { renderGame } from './views/renderGame.js';
 import { indexToPoint, pointToIndex } from './point.js';
@@ -25,7 +26,7 @@ const gameState = window.gameState = {
     }
     // console.log('event', event.type, event);
     handleClick(this, event);
-    updateIslandPositions(this, event);
+    // updateIslandPositions(this, event);
     updateDidWin(this, event);
   },
   //
@@ -61,31 +62,6 @@ const gameState = window.gameState = {
 };
 
 
-//
-// updates the position of islands in the state.islands array.
-// Swaps the two islands in state.swapIndexes.
-function updateIslandPositions(state) {
-  const { swapIndexes, islands } = state;
-  if (swapIndexes.length !== 2) { return state; }
-  const bottomIsland = islands[swapIndexes[0]];
-  const topIsland = islands[swapIndexes[1]];
-
-  // Swap the islands!
-  islands.splice(swapIndexes[1], 1, bottomIsland);
-  islands.splice(swapIndexes[0], 1, topIsland);
-  // Swap the Visitors x,y positions
-  const bottomVisitor = state.getVisitorAt(swapIndexes[0]);
-  const topVisitor = state.getVisitorAt(swapIndexes[1]);
-  if (bottomVisitor) {
-    Object.assign(bottomVisitor, indexToPoint(swapIndexes[1]));
-  }
-  if (topVisitor) {
-    Object.assign(topVisitor, indexToPoint(swapIndexes[0]));
-  }
-  // clear the indexes
-  swapIndexes.length = 0;
-  return state;
-}
 //
 // Check if the user won!
 function updateDidWin(state) {
@@ -131,7 +107,8 @@ function handleClick(state, event) {
     case ACTIONS.DESTROY_ISLAND:
       return destroyIsland(state);
     case ACTIONS.SWAP_ISLANDS:
-      return swapIslands(state);
+      const bottomIndex = parseInt(currentTarget.dataset.idx, 10);
+      return swapIslands(state, bottomIndex);
     default:
       console.warn('unknown action', nextAction);
   }
@@ -141,19 +118,6 @@ function handleClick(state, event) {
   if (nextAction === ACTIONS.GAME_OVER) {
     // just close the dialog so the user can see the island.
     animationHideDialog(state);
-  }
-
-  if (nextAction === ACTIONS.SWAP_ISLANDS && !isDialogOpen) {
-    const bottomIndex = parseInt(currentTarget.dataset.idx, 10);
-    const topIndex = state.getPairedIndex(bottomIndex);
-    // Skip invalid pairs (like the top islands)
-    if (topIndex < 0) { return state; }
-    // Start the animation.
-    animationSwap(state, [bottomIndex, topIndex]).then(() => {
-      state.swapIndexes = [bottomIndex, topIndex];
-      // re-render with the new state.
-      state.triggerRender();
-    });
   }
 
   return state;
@@ -174,10 +138,6 @@ function animationWin(state) {
 
 //
 // Utils
-function resetTransforms(elm) {
-  elm.style.transform = '';
-  return elm;
-}
 
 //
 // Define some levels

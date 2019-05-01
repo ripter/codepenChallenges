@@ -16,10 +16,10 @@ export function markEndAnimation(state) {
 }
 
 export function wrapForAnimation(func) {
-  return function(state) {
-    markStartAnimation(state);
-    return func(state).then(() => {
-      markEndAnimation(state);
+  return function(...args) {
+    markStartAnimation(args[0]);
+    return func.apply(null, args).then(() => {
+      markEndAnimation(args[0]);
     });
   };
 }
