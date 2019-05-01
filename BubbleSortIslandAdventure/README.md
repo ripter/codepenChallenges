@@ -2,6 +2,6 @@
 
 # Architecture
 
-* Events -> state.action();
-* Action -> Render
-* Render -> updates DOM/Animation
+* `actions/`
+  * Actions take state, and return a promise.
+  * Starts/Stops animations.

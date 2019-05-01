@@ -4,6 +4,7 @@
   const FLOOR_SIZE = 5;
   const ANIMATION_DURATION = 2000;
   const ACTIONS = {
+    PREVIEW_ISLAND: 'PREVIEW_ISLAND',
     HIDE_UNTIL_CLICK: 'HIDE_UNTIL_CLICK',
     START_GAME: 'START_GAME',
     SWAP_ISLANDS: 'SWAP_ISLANDS',
@@ -39,7 +40,7 @@
       ],
       next: {
         label: 'Let me take a better look',
-        action:  ACTIONS.HIDE_UNTIL_CLICK,
+        action:  ACTIONS.PREVIEW_ISLAND,
       },
     },{
       title: 'Trouble Maker:',
@@ -90,6 +91,20 @@
       };
     });
 
+    return Promise.resolve(state);
+  }
+
+  function markStartAnimation$1(state) {
+    state.isAnimating = true;
+    //TODO: better spot to touching the DOM
+    document.body.classList.add('is-animating');
+    return state;
+  }
+
+  function markEndAnimation$1(state) {
+    state.isAnimating = false;
+    //TODO: better spot to touching the DOM
+    document.body.classList.remove('is-animating');
     return state;
   }
 
@@ -109,17 +124,40 @@
   function openDialog() {
     return anime({
       targets: '#elDialog',
-      duration: ANIMATION_DURATION,
       easing: 'easeInQuart',
+      duration: ANIMATION_DURATION,
       translateX: ['-80vw', 0],
     }).finished;
   }
 
   function startGame(state) {
+    markStartAnimation$1(state);
     return Promise.all([
       animationRestoreIsland(),
       openDialog(),
-    ]);
+    ]).then(() => {
+      markEndAnimation$1(state);
+    });
+  }
+
+  function closeDialog() {
+    return anime({
+      targets: '#elDialog',
+      easing: 'easeInQuart',
+      duration: ANIMATION_DURATION/2,
+      translateX: [0, '-80vw'],
+    }).finished;
+  }
+
+  function previewIsland(state) {
+    markStartAnimation$1(state);
+    return Promise.all([
+      closeDialog(),
+    ]).then(() => {
+      // advance to the next story
+      state.storyIndex += 1;
+      markEndAnimation$1(state);
+    });
   }
 
   //
@@ -294,20 +332,33 @@
     if ('click' !== type || isAnimating) { return state; }
     const nextAction = currentTarget.getAttribute('action');
 
-    // If we are hiding until a click happend
-    if (lastAction === ACTIONS.HIDE_UNTIL_CLICK
-      && nextAction !== ACTIONS.HIDE_UNTIL_CLICK) {
-      // Show the next dialog
-      animationShowDialog(state).then(() => {
-        state.lastAction = ACTIONS.WAIT;
-        // re-render with the new state.
-        state.triggerRender();
-      });
-      return state;
+    state.lastAction = nextAction;
+
+    // If we where previewing the island
+    if (lastAction === ACTIONS.PREVIEW_ISLAND) {
+      return;
     }
 
-    // We switch our action to the new one.
-    state.lastAction = nextAction;
+    console.log('nextAction', nextAction);
+    if (nextAction === ACTIONS.PREVIEW_ISLAND) {
+      console.log('show island preview');
+      previewIsland(state).then(() => {
+        console.log('preview complete');
+      });
+    }
+
+    // // If we are hiding until a click happend
+    // if (lastAction === ACTIONS.HIDE_UNTIL_CLICK
+    //   && nextAction !== ACTIONS.HIDE_UNTIL_CLICK) {
+    //   // Show the next dialog
+    //   animationShowDialog(state).then(() => {
+    //     state.lastAction = ACTIONS.WAIT;
+    //     // re-render with the new state.
+    //     state.triggerRender();
+    //   });
+    //   return state;
+    // }
+
 
     if(nextAction === ACTIONS.HIDE_UNTIL_CLICK) {
       // Animate closed and then update the state.
@@ -436,33 +487,10 @@
     });
   }
 
-  //
-  // Dialog Animations
-  function animationHideDialog(state) {
-    markStartAnimation(state);
-    return anime({
-      targets: '#elDialog',
-      easing: 'easeInQuart',
-      duration: ANIMATION_DURATION/2,
-      translateX: [0, '-80vw'],
-    }).finished.then(() => {
-      markEndAnimation(state);
-      state.isDialogOpen = false;
-      state.storyIndex += 1;
-    });
-  }
 
 
   //
   // Utils
-  function markStartAnimation(state) {
-    state.isAnimating = true;
-    document.body.classList.add('is-animating');
-  }
-  function markEndAnimation(state) {
-    state.isAnimating = false;
-    document.body.classList.remove('is-animating');
-  }
   function resetTransforms(elm) {
     elm.style.transform = '';
     return elm;
@@ -491,7 +519,7 @@
   document.body.style.setProperty('--grid--total-columns', FLOOR_SIZE);
   document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 
-  // Load the level
+  // Load and start the level
   loadLevel(gameState, levels[0]);
   renderGame(gameState);
   startGame(gameState);

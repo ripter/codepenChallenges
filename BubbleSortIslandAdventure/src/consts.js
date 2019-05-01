@@ -1,6 +1,7 @@
 export const FLOOR_SIZE = 5;
 export const ANIMATION_DURATION = 2000;
 export const ACTIONS = {
+  PREVIEW_ISLAND: 'PREVIEW_ISLAND',
   HIDE_UNTIL_CLICK: 'HIDE_UNTIL_CLICK',
   START_GAME: 'START_GAME',
   SWAP_ISLANDS: 'SWAP_ISLANDS',
@@ -36,7 +37,7 @@ export const STORY = [
     ],
     next: {
       label: 'Let me take a better look',
-      action:  ACTIONS.HIDE_UNTIL_CLICK,
+      action:  ACTIONS.PREVIEW_ISLAND,
     },
   },{
     title: 'Trouble Maker:',

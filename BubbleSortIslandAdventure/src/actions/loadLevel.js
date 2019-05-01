@@ -22,5 +22,5 @@ export function loadLevel(state = {}, level) {
     };
   });
 
-  return state;
+  return Promise.resolve(state);
 }
