@@ -48,6 +48,15 @@ const gameState = window.gameState = {
       type: 'render',
     });
   },
+
+  set(newState) {
+    // Merge in the new state.
+    Object.assign(this, newState);
+    // Trigger change
+    if (this.onChange) {
+      this.onChange(this);
+    }
+  }
 };
 
 
@@ -295,6 +304,8 @@ const levels = [{
 document.body.style.setProperty('--grid--total-columns', FLOOR_SIZE);
 document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 
+// Re-render on state change
+gameState.onChange = renderGame;
 // Load and start the level
 loadLevel(gameState, levels[0]);
 renderGame(gameState);

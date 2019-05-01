@@ -161,7 +161,13 @@
   }
 
   function nextStoryDialog(state) {
-    state.storyIndex += 1;
+    const { storyIndex } = state;
+
+    // Update the state
+    state.set({
+      storyIndex:  storyIndex + 1,
+    });
+    // Run the animation
     return Promise.all([
       openDialog(),
     ]);
@@ -281,6 +287,15 @@
         type: 'render',
       });
     },
+
+    set(newState) {
+      // Merge in the new state.
+      Object.assign(this, newState);
+      // Trigger change
+      if (this.onChange) {
+        this.onChange(this);
+      }
+    }
   };
 
 
@@ -528,6 +543,8 @@
   document.body.style.setProperty('--grid--total-columns', FLOOR_SIZE);
   document.body.style.setProperty('--grid--total-rows', FLOOR_SIZE);
 
+  // Re-render on state change
+  gameState.onChange = renderGame;
   // Load and start the level
   loadLevel(gameState, levels[0]);
   renderGame(gameState);
