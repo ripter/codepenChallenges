@@ -21,13 +21,9 @@ const gameState = window.gameState = {
   //
   // Handle's events, updates state, and triggers re-render
   handleEvent(event) {
-    if (event.preventDefault) {
-      event.preventDefault();
-    }
+    event.preventDefault();
     // console.log('event', event.type, event);
     handleClick(this, event);
-    // updateIslandPositions(this, event);
-    updateDidWin(this, event);
   },
   //
   // Returns the the index for the island above.
@@ -62,28 +58,6 @@ const gameState = window.gameState = {
 };
 
 
-//
-// Check if the user won!
-function updateDidWin(state) {
-  const { goal, visitors, didWin } = state;
-  state.didWin = goal.every(({x, y, spritesheet, sprite}) => {
-    return visitors.find((visitor) => {
-      return visitor.x === x
-        && visitor.y === y
-        && visitor.spritesheet === spritesheet
-        && visitor.sprite === sprite;
-    });
-  });
-
-  // If we are switching to win for the first time.
-  if (!didWin && state.didWin) {
-    // ugly hack, we need to wait until after render to trigger the animation.
-    setTimeout(() => {
-      animationWin(state);
-    });
-  }
-  return state;
-}
 
 function handleClick(state, event) {
   const { lastAction, visitors, isDialogOpen, isAnimating } = state;
