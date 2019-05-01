@@ -96,16 +96,16 @@
   }
 
   function markStartAnimation$1(state) {
+    // setting directly because we do not want to trigger a re-render
     state.isAnimating = true;
-    console.log('marking start animation');
     //TODO: better spot to touching the DOM
     document.body.classList.add('is-animating');
     return state;
   }
 
   function markEndAnimation$1(state) {
+    // setting directly because we do not want to trigger a re-render
     state.isAnimating = false;
-    console.log('marking end animation');
     //TODO: better spot to touching the DOM
     document.body.classList.remove('is-animating');
     return state;
@@ -117,10 +117,10 @@
       return func(state).then(() => {
         markEndAnimation$1(state);
       });
-    }
+    };
   }
 
-  function animationRestoreIsland() {
+  function restoreIsland() {
     const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
       return anime({
         targets,
@@ -142,9 +142,9 @@
     }).finished;
   }
 
-  const startGame = wrapForAnimation((state) => {
+  const startGame = wrapForAnimation((/*state*/) => {
     return Promise.all([
-      animationRestoreIsland(),
+      restoreIsland(),
       openDialog(),
     ]);
   });
@@ -158,13 +158,13 @@
     }).finished;
   }
 
-  const previewIsland = wrapForAnimation((state) => {
+  const previewIsland = wrapForAnimation((/*state*/) => {
     return Promise.all([
       closeDialog(),
     ]);
   });
 
-  function animationDestroyIsland() {
+  function destoryIsland() {
     const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
       return anime({
         targets,
@@ -184,7 +184,7 @@
     });
     return Promise.all([
       closeDialog(),
-      animationDestroyIsland(),
+      destoryIsland(),
     ]);
   });
 
@@ -396,7 +396,6 @@
     if ('click' !== type || isAnimating) { return state; }
     const nextAction = currentTarget.getAttribute('action');
 
-    console.log('nextAction', nextAction);
     state.lastAction = nextAction;
 
     // If we where previewing the island,
@@ -411,12 +410,14 @@
         return previewIsland(state);
       case ACTIONS.DESTROY_ISLAND:
         return destroyIsland(state);
+      case ACTIONS.SWAP_ISLANDS:
+        return swapIslands(state);
       default:
         console.warn('unknown action', nextAction);
     }
 
 
-
+    debugger;
     if (nextAction === ACTIONS.GAME_OVER) {
       // just close the dialog so the user can see the island.
       animationHideDialog(state);
@@ -437,46 +438,6 @@
 
     return state;
   }
-
-
-
-
-
-  //
-  // Animations
-  // Island Swap
-  function animationSwap(state, [bottomIndex, topIndex]) {
-    markStartAnimation(state);
-    return Promise.all([
-      anime({
-        targets: `.island:nth-child(${topIndex+1})`,
-        delay: 0,
-        duration: ANIMATION_DURATION,
-        easing: 'easeOutExpo',
-        keyframes: [
-          {translateX: '0%', translateY: '0%', 'z-index': 110},
-          {translateX: '50%', translateY: '50%'},
-          {translateX: '0%', translateY: '100%', 'z-index': 100},
-        ],
-      }).finished,
-      anime({
-        targets: `.island:nth-child(${bottomIndex+1})`,
-        duration: ANIMATION_DURATION,
-        easing: 'easeOutCirc',
-        delay: 0,
-        keyframes: [
-          {translateX: '0%', translateY: '0%', 'z-index': 110},
-          {translateX: '-50%', translateY: '-50%'},
-          {translateX: '0%', translateY: '-100%', 'z-index': 100},
-        ],
-      }).finished,
-    ]).then(() => {
-      // remove the styles anime added for the animation. State will have the island in the new position on re-render.
-      document.querySelectorAll(`.island:nth-child(${topIndex+1}), .island:nth-child(${bottomIndex+1}`).forEach(elm => elm.removeAttribute('style'));
-      markEndAnimation(state);
-    });
-  }
-
 
   function animationWin(state) {
     markStartAnimation(state);

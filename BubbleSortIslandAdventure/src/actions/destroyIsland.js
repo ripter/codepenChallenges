@@ -1,5 +1,5 @@
 import { wrapForAnimation } from '../markAnimation.js';
-import { animationDestroyIsland } from '../animations/destroyIsland.js';
+import { destoryIsland } from '../animations/destroyIsland.js';
 import { closeDialog } from '../animations/closeDialog.js';
 import { FLOOR_SIZE } from '../consts.js';
 
@@ -11,7 +11,7 @@ export const destroyIsland = wrapForAnimation((state) => {
   });
   return Promise.all([
     closeDialog(),
-    animationDestroyIsland(),
+    destoryIsland(),
   ]);
 });
 

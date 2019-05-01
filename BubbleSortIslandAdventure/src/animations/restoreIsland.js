@@ -1,6 +1,6 @@
 import { ANIMATION_DURATION, SELECTOR_ISLANDS } from '../consts.js';
 
-export function animationRestoreIsland() {
+export function restoreIsland() {
   const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
     return anime({
       targets,
