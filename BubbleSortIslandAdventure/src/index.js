@@ -4,7 +4,7 @@ import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
 import { destroyIsland } from './actions/destroyIsland.js';
 import { nextStoryDialog } from './actions/nextStoryDialog.js';
-import { renderGame } from './views/index.js';
+import { renderGame } from './views/renderGame.js';
 import { indexToPoint, pointToIndex } from './point.js';
 
 //

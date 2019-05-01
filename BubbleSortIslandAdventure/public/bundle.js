@@ -203,17 +203,6 @@
     });
   }
 
-    // if (nextAction === ACTIONS.START_GAME) {
-    //   Promise.all([
-    //     animationHideDialog(state),
-    //     animationExplode(state),
-    //   ]).then(() => {
-    //     state.visitors = randomizeVisitors(visitors);
-    //     // re-render with the new state.
-    //     state.triggerRender();
-    //   });
-    // }
-
   const nextStoryDialog = wrapForAnimation((state) => {
     const { storyIndex } = state;
     // Update the state
