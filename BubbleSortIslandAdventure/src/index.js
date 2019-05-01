@@ -2,6 +2,7 @@ import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS } from './consts.js';
 import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
+import { destroyIsland } from './actions/destroyIsland.js';
 import { nextStoryDialog } from './actions/nextStoryDialog.js';
 import { renderGame } from './views/index.js';
 import { indexToPoint, pointToIndex } from './point.js';
@@ -118,41 +119,23 @@ function handleClick(state, event) {
   console.log('nextAction', nextAction);
   state.lastAction = nextAction;
 
-  // If we where previewing the island
-  // this click should open the next dialog
+  // If we where previewing the island,
+  // then this click should open the next dialog.
   if (lastAction === ACTIONS.PREVIEW_ISLAND) {
-    return nextStoryDialog(state).then(() => {
-      console.log('nextStoryDialog complete');
-    });
-  }
-
-  if (nextAction === ACTIONS.PREVIEW_ISLAND) {
-    console.log('show island preview');
-    return previewIsland(state).then(() => {
-      console.log('previewIsland complete');
-    });
+    return nextStoryDialog(state);
   }
 
 
-
-  if(nextAction === ACTIONS.HIDE_UNTIL_CLICK) {
-    // Animate closed and then update the state.
-    animationHideDialog(state).then(() => {
-      // re-render with the new state.
-      state.triggerRender();
-    });
+  switch (nextAction) {
+    case ACTIONS.PREVIEW_ISLAND:
+      return previewIsland(state);
+    case ACTIONS.DESTROY_ISLAND:
+      return destroyIsland(state);
+    default:
+      console.warn('unknown action', nextAction);
   }
 
-  if (nextAction === ACTIONS.START_GAME) {
-    Promise.all([
-      animationHideDialog(state),
-      animationExplode(state),
-    ]).then(() => {
-      state.visitors = randomizeVisitors(visitors);
-      // re-render with the new state.
-      state.triggerRender();
-    });
-  }
+
 
   if (nextAction === ACTIONS.GAME_OVER) {
     // just close the dialog so the user can see the island.

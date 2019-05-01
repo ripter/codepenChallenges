@@ -5,7 +5,8 @@
   const ANIMATION_DURATION = 2000;
   const ACTIONS = {
     PREVIEW_ISLAND: 'PREVIEW_ISLAND',
-    HIDE_UNTIL_CLICK: 'HIDE_UNTIL_CLICK',
+    DESTROY_ISLAND: 'DESTROY_ISLAND',
+    
     START_GAME: 'START_GAME',
     SWAP_ISLANDS: 'SWAP_ISLANDS',
     WAIT: 'WAIT',
@@ -53,7 +54,7 @@
       ],
       next: {
         label: 'I\'m on it!',
-        action: ACTIONS.START_GAME,
+        action: ACTIONS.DESTROY_ISLAND,
       },
     },{
       title: 'Islander:',
@@ -162,6 +163,38 @@
       closeDialog(),
     ]);
   });
+
+  function animationDestroyIsland() {
+    const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
+      return anime({
+        targets,
+        duration: ANIMATION_DURATION,
+        translateX: [anime.stagger('-54%', { start: start.x }), 0],
+        translateY: [anime.stagger('23%', { start: start.y }), 0],
+        easing: 'easeInOutSine',
+      }).finished;
+    });
+    return Promise.all(promiseList);
+  }
+
+  const destroyIsland = wrapForAnimation((state) => {
+    return Promise.all([
+      closeDialog(),
+      animationDestroyIsland(),
+    ]);
+  });
+
+
+    // if (nextAction === ACTIONS.START_GAME) {
+    //   Promise.all([
+    //     animationHideDialog(state),
+    //     animationExplode(state),
+    //   ]).then(() => {
+    //     state.visitors = randomizeVisitors(visitors);
+    //     // re-render with the new state.
+    //     state.triggerRender();
+    //   });
+    // }
 
   const nextStoryDialog = wrapForAnimation((state) => {
     const { storyIndex } = state;
@@ -359,41 +392,23 @@
     console.log('nextAction', nextAction);
     state.lastAction = nextAction;
 
-    // If we where previewing the island
-    // this click should open the next dialog
+    // If we where previewing the island,
+    // then this click should open the next dialog.
     if (lastAction === ACTIONS.PREVIEW_ISLAND) {
-      return nextStoryDialog(state).then(() => {
-        console.log('nextStoryDialog complete');
-      });
-    }
-
-    if (nextAction === ACTIONS.PREVIEW_ISLAND) {
-      console.log('show island preview');
-      return previewIsland(state).then(() => {
-        console.log('previewIsland complete');
-      });
+      return nextStoryDialog(state);
     }
 
 
-
-    if(nextAction === ACTIONS.HIDE_UNTIL_CLICK) {
-      // Animate closed and then update the state.
-      animationHideDialog(state).then(() => {
-        // re-render with the new state.
-        state.triggerRender();
-      });
+    switch (nextAction) {
+      case ACTIONS.PREVIEW_ISLAND:
+        return previewIsland(state);
+      case ACTIONS.DESTROY_ISLAND:
+        return destroyIsland(state);
+      default:
+        console.warn('unknown action', nextAction);
     }
 
-    if (nextAction === ACTIONS.START_GAME) {
-      Promise.all([
-        animationHideDialog(state),
-        animationExplode(state),
-      ]).then(() => {
-        state.visitors = randomizeVisitors(visitors);
-        // re-render with the new state.
-        state.triggerRender();
-      });
-    }
+
 
     if (nextAction === ACTIONS.GAME_OVER) {
       // just close the dialog so the user can see the island.
@@ -414,21 +429,6 @@
     }
 
     return state;
-  }
-
-
-  //
-  // Randomizes the visitors along the y-axis only.
-  function randomizeVisitors(visitors) {
-    // Create a random list of indexes for each column.
-    const randomIndexes = Array(FLOOR_SIZE).fill().map(() => {
-      return Array(FLOOR_SIZE).fill().map((_, i) => i).sort(() => 0|Math.random()*3-2);
-    });
-    // Give each visitor a new random y position from the random list.
-    return visitors.map((visitor) => {
-      visitor.y = randomIndexes[visitor.x].pop();
-      return visitor;
-    });
   }
 
 
@@ -467,29 +467,6 @@
       markEndAnimation(state);
     });
   }
-  //
-  // explode the world into islands!
-  function animationExplode(state) {
-    markStartAnimation(state);
-
-    const promiseList = [{x:200, y:108}, {x:154, y:31}, {x:108, y:-46}, {x:62, y:-123}, {x:16, y:-200}].map((start, index) => {
-      const targets = Array(FLOOR_SIZE)
-        .fill()
-        .map((_, i) => index*FLOOR_SIZE+i)
-        .reduce((result, num) => `${result}, .island:nth-child(${num+1})`, '').substring(1);
-      return anime({
-        targets,
-        duration: ANIMATION_DURATION,
-        translateX: [anime.stagger('-54%', { start: start.x }), 0],
-        translateY: [anime.stagger('23%', { start: start.y }), 0],
-        easing: 'easeInOutSine',
-      }).finished;
-    });
-    return Promise.all(promiseList).then(() => {
-      markEndAnimation(state);
-      document.querySelectorAll('.island').forEach(resetTransforms);
-    });
-  }
 
 
   function animationWin(state) {
@@ -501,15 +478,6 @@
     return Promise.all(promiseList).then(() => {
       markEndAnimation(state);
     });
-  }
-
-
-
-  //
-  // Utils
-  function resetTransforms(elm) {
-    elm.style.transform = '';
-    return elm;
   }
 
   //

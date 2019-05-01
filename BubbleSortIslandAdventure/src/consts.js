@@ -2,7 +2,8 @@ export const FLOOR_SIZE = 5;
 export const ANIMATION_DURATION = 2000;
 export const ACTIONS = {
   PREVIEW_ISLAND: 'PREVIEW_ISLAND',
-  HIDE_UNTIL_CLICK: 'HIDE_UNTIL_CLICK',
+  DESTROY_ISLAND: 'DESTROY_ISLAND',
+  
   START_GAME: 'START_GAME',
   SWAP_ISLANDS: 'SWAP_ISLANDS',
   WAIT: 'WAIT',
@@ -50,7 +51,7 @@ export const STORY = [
     ],
     next: {
       label: 'I\'m on it!',
-      action: ACTIONS.START_GAME,
+      action: ACTIONS.DESTROY_ISLAND,
     },
   },{
     title: 'Islander:',
