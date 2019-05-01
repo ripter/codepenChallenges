@@ -96,6 +96,7 @@
 
   function markStartAnimation$1(state) {
     state.isAnimating = true;
+    console.log('marking start animation');
     //TODO: better spot to touching the DOM
     document.body.classList.add('is-animating');
     return state;
@@ -103,9 +104,19 @@
 
   function markEndAnimation$1(state) {
     state.isAnimating = false;
+    console.log('marking end animation');
     //TODO: better spot to touching the DOM
     document.body.classList.remove('is-animating');
     return state;
+  }
+
+  function wrapForAnimation(func) {
+    return function(state) {
+      markStartAnimation$1(state);
+      return func(state).then(() => {
+        markEndAnimation$1(state);
+      });
+    }
   }
 
   function animationRestoreIsland() {
@@ -130,15 +141,12 @@
     }).finished;
   }
 
-  function startGame(state) {
-    markStartAnimation$1(state);
+  const startGame = wrapForAnimation((state) => {
     return Promise.all([
       animationRestoreIsland(),
       openDialog(),
-    ]).then(() => {
-      markEndAnimation$1(state);
-    });
-  }
+    ]);
+  });
 
   function closeDialog() {
     return anime({
@@ -149,20 +157,14 @@
     }).finished;
   }
 
-  function previewIsland(state) {
-    markStartAnimation$1(state);
+  const previewIsland = wrapForAnimation((state) => {
     return Promise.all([
       closeDialog(),
-    ]).then(() => {
-      // advance to the next story
-      // state.storyIndex += 1;
-      markEndAnimation$1(state);
-    });
-  }
+    ]);
+  });
 
-  function nextStoryDialog(state) {
+  const nextStoryDialog = wrapForAnimation((state) => {
     const { storyIndex } = state;
-
     // Update the state
     state.set({
       storyIndex:  storyIndex + 1,
@@ -171,7 +173,7 @@
     return Promise.all([
       openDialog(),
     ]);
-  }
+  });
 
   //
   // Visitor is just a sprite.
@@ -354,16 +356,17 @@
     if ('click' !== type || isAnimating) { return state; }
     const nextAction = currentTarget.getAttribute('action');
 
+    console.log('nextAction', nextAction);
     state.lastAction = nextAction;
 
     // If we where previewing the island
+    // this click should open the next dialog
     if (lastAction === ACTIONS.PREVIEW_ISLAND) {
       return nextStoryDialog(state).then(() => {
         console.log('nextStoryDialog complete');
       });
     }
 
-    console.log('nextAction', nextAction);
     if (nextAction === ACTIONS.PREVIEW_ISLAND) {
       console.log('show island preview');
       return previewIsland(state).then(() => {
@@ -371,17 +374,6 @@
       });
     }
 
-    // // If we are hiding until a click happend
-    // if (lastAction === ACTIONS.HIDE_UNTIL_CLICK
-    //   && nextAction !== ACTIONS.HIDE_UNTIL_CLICK) {
-    //   // Show the next dialog
-    //   animationShowDialog(state).then(() => {
-    //     state.lastAction = ACTIONS.WAIT;
-    //     // re-render with the new state.
-    //     state.triggerRender();
-    //   });
-    //   return state;
-    // }
 
 
     if(nextAction === ACTIONS.HIDE_UNTIL_CLICK) {

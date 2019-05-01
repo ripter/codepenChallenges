@@ -1,14 +1,11 @@
-import { markStartAnimation, markEndAnimation } from '../markAnimation.js';
+import { wrapForAnimation } from '../markAnimation.js';
 import { animationRestoreIsland } from '../animations/restoreIsland.js';
 import { openDialog } from '../animations/openDialog.js';
 
 
-export function startGame(state) {
-  markStartAnimation(state);
+export const startGame = wrapForAnimation((state) => {
   return Promise.all([
     animationRestoreIsland(),
     openDialog(),
-  ]).then(() => {
-    markEndAnimation(state);
-  });
-}
+  ]);
+});

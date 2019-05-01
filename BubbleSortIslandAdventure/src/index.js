@@ -115,16 +115,17 @@ function handleClick(state, event) {
   if ('click' !== type || isAnimating) { return state; }
   const nextAction = currentTarget.getAttribute('action');
 
+  console.log('nextAction', nextAction);
   state.lastAction = nextAction;
 
   // If we where previewing the island
+  // this click should open the next dialog
   if (lastAction === ACTIONS.PREVIEW_ISLAND) {
     return nextStoryDialog(state).then(() => {
       console.log('nextStoryDialog complete');
     });
   }
 
-  console.log('nextAction', nextAction);
   if (nextAction === ACTIONS.PREVIEW_ISLAND) {
     console.log('show island preview');
     return previewIsland(state).then(() => {
@@ -132,17 +133,6 @@ function handleClick(state, event) {
     });
   }
 
-  // // If we are hiding until a click happend
-  // if (lastAction === ACTIONS.HIDE_UNTIL_CLICK
-  //   && nextAction !== ACTIONS.HIDE_UNTIL_CLICK) {
-  //   // Show the next dialog
-  //   animationShowDialog(state).then(() => {
-  //     state.lastAction = ACTIONS.WAIT;
-  //     // re-render with the new state.
-  //     state.triggerRender();
-  //   });
-  //   return state;
-  // }
 
 
   if(nextAction === ACTIONS.HIDE_UNTIL_CLICK) {
