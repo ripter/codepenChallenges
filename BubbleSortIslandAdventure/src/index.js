@@ -14,7 +14,7 @@ const gameState = window.gameState = {
   isDialogOpen: false,
   didWin: true,
   storyIndex: 0,
-  swapIndexes: [],
+  // swapIndexes: [],
   islands: [],
   goal: [],
   visitors: [],

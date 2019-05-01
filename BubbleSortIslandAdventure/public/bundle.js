@@ -254,7 +254,7 @@
     const { goal, visitors } = state;
     const topIndex = state.getPairedIndex(bottomIndex);
     // Skip invalid pairs (like the top islands)
-    if (topIndex < 0) { return state; }
+    if (topIndex < 0) { return Promise.resolve(state); }
 
     return Promise.all([
       animateSwapIslands(bottomIndex, topIndex),
@@ -264,6 +264,11 @@
         islands: swap(state, bottomIndex, topIndex),
         didWin: checkDidWin(goal, visitors),
       });
+    }).then(() => {
+      // Did the user win?
+      if (state.didWin) {
+        console.log('You Won!!');
+      }
     });
   });
 
@@ -376,7 +381,7 @@
     isDialogOpen: false,
     didWin: true,
     storyIndex: 0,
-    swapIndexes: [],
+    // swapIndexes: [],
     islands: [],
     goal: [],
     visitors: [],
