@@ -1,6 +1,10 @@
 import { wrapForAnimation } from '../markAnimation.js';
-import { openDialog } from '../animations/openDialog.js';
+import { animateOpenDialog } from '../animations/openDialog.js';
 
+/**
+ * Advances the storyIndex and opens the dialog.
+ * @return {Promise}
+ */
 export const nextStoryDialog = wrapForAnimation((state) => {
   const { storyIndex } = state;
   // Update the state
@@ -9,6 +13,6 @@ export const nextStoryDialog = wrapForAnimation((state) => {
   });
   // Run the animation
   return Promise.all([
-    openDialog(),
+    animateOpenDialog(),
   ]);
 });

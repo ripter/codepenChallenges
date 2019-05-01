@@ -3,9 +3,7 @@ import { FLOOR_SIZE } from '../consts.js';
 /**
  * Loads the level data
  * Turns mobs into visitors, islands, and goal
- * @param  {Object} [state={}]
- * @param  {Object} level
- * @return {Object}
+ * @return {Promise}
  */
 export function loadLevel(state = {}, level) {
   const { mobs } = level;

@@ -73,9 +73,7 @@
   /**
    * Loads the level data
    * Turns mobs into visitors, islands, and goal
-   * @param  {Object} [state={}]
-   * @param  {Object} level
-   * @return {Object}
+   * @return {Promise}
    */
   function loadLevel(state = {}, level) {
     const { mobs } = level;
@@ -120,7 +118,7 @@
     };
   }
 
-  function restoreIsland() {
+  function animateRestoreIsland() {
     const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
       return anime({
         targets,
@@ -133,7 +131,7 @@
     return Promise.all(promiseList);
   }
 
-  function openDialog() {
+  function animateOpenDialog() {
     return anime({
       targets: '#elDialog',
       easing: 'easeInQuart',
@@ -142,14 +140,18 @@
     }).finished;
   }
 
+  /**
+   * Combines the grid into a single island and opens the dialog.
+   * @return {Promise}
+   */
   const startGame = wrapForAnimation((/*state*/) => {
     return Promise.all([
-      restoreIsland(),
-      openDialog(),
+      animateRestoreIsland(),
+      animateOpenDialog(),
     ]);
   });
 
-  function closeDialog() {
+  function animateCloseDialog() {
     return anime({
       targets: '#elDialog',
       easing: 'easeInQuart',
@@ -158,13 +160,17 @@
     }).finished;
   }
 
+  /**
+   * Closes the dialog
+   * @return {Promise}
+   */
   const previewIsland = wrapForAnimation((/*state*/) => {
     return Promise.all([
-      closeDialog(),
+      animateCloseDialog(),
     ]);
   });
 
-  function destoryIsland() {
+  function animateDestoryIsland() {
     const promiseList = SELECTOR_ISLANDS.map(({targets, start}) => {
       return anime({
         targets,
@@ -177,20 +183,24 @@
     return Promise.all(promiseList);
   }
 
+  /**
+   * "Destory" the island by randomizing the visitors and breaking it into a grid.
+   * @return {Promise}
+   */
   const destroyIsland = wrapForAnimation((state) => {
     const { visitors } = state;
     state.set({
       visitors: randomizeVisitors(visitors),
     });
     return Promise.all([
-      closeDialog(),
-      destoryIsland(),
+      animateCloseDialog(),
+      animateDestoryIsland(),
     ]);
   });
 
-
-  //
-  // Randomizes the visitors along the y-axis only.
+  /**
+   * Randomizes the visitors along the y-axis only.
+   */
   function randomizeVisitors(visitors) {
     // Create a random list of indexes for each column.
     const randomIndexes = Array(FLOOR_SIZE).fill().map(() => {
@@ -203,14 +213,19 @@
     });
   }
 
+  /**
+   * Restore the grid back into one island.
+   * Advance the story and open the dialog.
+   * @return {Promise}
+   */
   const winGame = wrapForAnimation((state) => {
     const { storyIndex } = state;
     state.set({
       storyIndex: storyIndex + 1,
     });
     return Promise.all([
-      restoreIsland(),
-      openDialog(),
+      animateRestoreIsland(),
+      animateOpenDialog(),
     ]);
   });
 
@@ -285,22 +300,21 @@
     return Promise.all([
       animateSwapIslands(bottomIndex, topIndex),
     ]).then(() => {
-      // const islands = swap(state, bottomIndex, topIndex);
-      // const didWin = checkDidWin(goal, visitors);
-      // Update the state to reflect the visual change
-      state.set({
-        islands: swap(state, bottomIndex, topIndex),
-        didWin: checkDidWin(goal, visitors),
-      });
-    }).then(() => {
-      // Did the user win?
-      if (state.didWin) {
-        return winGame(state);
+      // swap mutates the islands array
+      swap(state, bottomIndex, topIndex);
+      // calling set just to trigger a re-render.
+      // swap mutated the islands array in place.
+      state.set({});
+
+      if (didWin(goal, visitors)) {
+        winGame(state);
       }
-      return state;
     });
   });
 
+  /**
+   * Swaps two islands and their visitors in place.
+   */
   function swap(state, bottomIndex, topIndex) {
     const { islands } = state;
     const bottomIsland = islands[bottomIndex];
@@ -320,7 +334,10 @@
     return islands;
   }
 
-  function checkDidWin(goal, visitors) {
+  /**
+   * Returns true when visitors are in the goal positions.
+   */
+  function didWin(goal, visitors) {
     return goal.every(({x, y, spritesheet, sprite}) => {
       return visitors.find((visitor) => {
         return visitor.x === x
@@ -331,6 +348,10 @@
     });
   }
 
+  /**
+   * Advances the storyIndex and opens the dialog.
+   * @return {Promise}
+   */
   const nextStoryDialog = wrapForAnimation((state) => {
     const { storyIndex } = state;
     // Update the state
@@ -339,7 +360,7 @@
     });
     // Run the animation
     return Promise.all([
-      openDialog(),
+      animateOpenDialog(),
     ]);
   });
 
@@ -408,9 +429,7 @@
   // Game State
   const gameState = window.gameState = {
     isDialogOpen: false,
-    didWin: true,
     storyIndex: 0,
-    // swapIndexes: [],
     islands: [],
     goal: [],
     visitors: [],
@@ -435,21 +454,14 @@
       const { x, y } = indexToPoint(index);
       return this.visitors.find((visitor) => visitor.x === x && visitor.y === y);
     },
-    //
-    // Helper to trigger a re-render.
-    triggerRender() {
-      this.handleEvent({
-        type: 'render',
-      });
-    },
 
+    //
+    // Updates the state and triggers a change aka re-render.
     set(newState) {
       // Merge in the new state.
       Object.assign(this, newState);
-      // Trigger change
-      if (this.onChange) {
-        this.onChange(this);
-      }
+      // Trigger change, we don't need to check if it really changed because lighterhtml is awesome!
+      this.onChange(this);
     },
   };
 

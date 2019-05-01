@@ -1,6 +1,6 @@
 import { ANIMATION_DURATION } from '../consts.js';
 
-export function openDialog() {
+export function animateOpenDialog() {
   return anime({
     targets: '#elDialog',
     easing: 'easeInQuart',

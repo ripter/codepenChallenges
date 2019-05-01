@@ -12,9 +12,7 @@ import { indexToPoint, pointToIndex } from './point.js';
 // Game State
 const gameState = window.gameState = {
   isDialogOpen: false,
-  didWin: true,
   storyIndex: 0,
-  // swapIndexes: [],
   islands: [],
   goal: [],
   visitors: [],
@@ -39,21 +37,14 @@ const gameState = window.gameState = {
     const { x, y } = indexToPoint(index);
     return this.visitors.find((visitor) => visitor.x === x && visitor.y === y);
   },
-  //
-  // Helper to trigger a re-render.
-  triggerRender() {
-    this.handleEvent({
-      type: 'render',
-    });
-  },
 
+  //
+  // Updates the state and triggers a change aka re-render.
   set(newState) {
     // Merge in the new state.
     Object.assign(this, newState);
-    // Trigger change
-    if (this.onChange) {
-      this.onChange(this);
-    }
+    // Trigger change, we don't need to check if it really changed because lighterhtml is awesome!
+    this.onChange(this);
   },
 };
 

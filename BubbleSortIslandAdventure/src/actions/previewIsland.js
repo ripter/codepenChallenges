@@ -1,8 +1,12 @@
 import { wrapForAnimation } from '../markAnimation.js';
-import { closeDialog } from '../animations/closeDialog.js';
+import { animateCloseDialog } from '../animations/closeDialog.js';
 
+/**
+ * Closes the dialog
+ * @return {Promise}
+ */
 export const previewIsland = wrapForAnimation((/*state*/) => {
   return Promise.all([
-    closeDialog(),
+    animateCloseDialog(),
   ]);
 });

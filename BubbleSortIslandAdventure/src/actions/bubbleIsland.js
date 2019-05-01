@@ -18,22 +18,21 @@ export const bubbleIsland = wrapForAnimation((state, bottomIndex) => {
   return Promise.all([
     animateSwapIslands(bottomIndex, topIndex),
   ]).then(() => {
-    // const islands = swap(state, bottomIndex, topIndex);
-    // const didWin = checkDidWin(goal, visitors);
-    // Update the state to reflect the visual change
-    state.set({
-      islands: swap(state, bottomIndex, topIndex),
-      didWin: checkDidWin(goal, visitors),
-    });
-  }).then(() => {
-    // Did the user win?
-    if (state.didWin) {
-      return winGame(state);
+    // swap mutates the islands array
+    swap(state, bottomIndex, topIndex);
+    // calling set just to trigger a re-render.
+    // swap mutated the islands array in place.
+    state.set({});
+
+    if (didWin(goal, visitors)) {
+      winGame(state);
     }
-    return state;
   });
 });
 
+/**
+ * Swaps two islands and their visitors in place.
+ */
 function swap(state, bottomIndex, topIndex) {
   const { islands } = state;
   const bottomIsland = islands[bottomIndex];
@@ -53,7 +52,10 @@ function swap(state, bottomIndex, topIndex) {
   return islands;
 }
 
-function checkDidWin(goal, visitors) {
+/**
+ * Returns true when visitors are in the goal positions.
+ */
+function didWin(goal, visitors) {
   return goal.every(({x, y, spritesheet, sprite}) => {
     return visitors.find((visitor) => {
       return visitor.x === x
