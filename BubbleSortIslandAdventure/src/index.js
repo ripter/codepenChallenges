@@ -2,6 +2,7 @@ import { FLOOR_SIZE, ANIMATION_DURATION, ACTIONS } from './consts.js';
 import { loadLevel } from './actions/loadLevel.js';
 import { startGame } from './actions/startGame.js';
 import { previewIsland } from './actions/previewIsland.js';
+import { nextStoryDialog } from './actions/nextStoryDialog.js';
 import { renderGame } from './views/index.js';
 import { indexToPoint, pointToIndex } from './point.js';
 
@@ -109,14 +110,16 @@ function handleClick(state, event) {
 
   // If we where previewing the island
   if (lastAction === ACTIONS.PREVIEW_ISLAND) {
-    return;
+    return nextStoryDialog(state).then(() => {
+      console.log('nextStoryDialog complete');
+    });
   }
 
   console.log('nextAction', nextAction);
   if (nextAction === ACTIONS.PREVIEW_ISLAND) {
     console.log('show island preview');
-    previewIsland(state).then(() => {
-      console.log('preview complete');
+    return previewIsland(state).then(() => {
+      console.log('previewIsland complete');
     });
   }
 

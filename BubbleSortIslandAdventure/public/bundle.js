@@ -155,9 +155,16 @@
       closeDialog(),
     ]).then(() => {
       // advance to the next story
-      state.storyIndex += 1;
+      // state.storyIndex += 1;
       markEndAnimation$1(state);
     });
+  }
+
+  function nextStoryDialog(state) {
+    state.storyIndex += 1;
+    return Promise.all([
+      openDialog(),
+    ]);
   }
 
   //
@@ -336,14 +343,16 @@
 
     // If we where previewing the island
     if (lastAction === ACTIONS.PREVIEW_ISLAND) {
-      return;
+      return nextStoryDialog(state).then(() => {
+        console.log('nextStoryDialog complete');
+      });
     }
 
     console.log('nextAction', nextAction);
     if (nextAction === ACTIONS.PREVIEW_ISLAND) {
       console.log('show island preview');
-      previewIsland(state).then(() => {
-        console.log('preview complete');
+      return previewIsland(state).then(() => {
+        console.log('previewIsland complete');
       });
     }
 
