@@ -6,6 +6,7 @@ export const ACTIONS = {
   SWAP_ISLANDS: 'SWAP_ISLANDS',
   NEXT_STORY: 'NEXT_STORY',
   NEXT_LEVEL: 'NEXT_LEVEL',
+  GAME_OVER: 'GAME_OVER',
 };
 
 //
@@ -199,5 +200,8 @@ export const LEVELS = [{
     {x: 0, y: 0, spritesheet: 'img-visitor', sprite: 0},
     {x: 1, y: 0, spritesheet: 'img-visitor', sprite: 1},
     {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
+
+    {x: 1, y: 3, spritesheet: 'img-number', sprite: 1},
+    {x: 3, y: 3, spritesheet: 'img-number', sprite: 3},
   ],
 }];

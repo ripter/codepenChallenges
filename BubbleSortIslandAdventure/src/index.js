@@ -6,6 +6,7 @@ import { destroyIsland } from './actions/destroyIsland.js';
 import { bubbleIsland } from './actions/bubbleIsland.js';
 import { nextStoryDialog } from './actions/nextStoryDialog.js';
 import { nextLevel } from './actions/nextLevel.js';
+import { gameOver } from './actions/gameOver.js';
 import { renderGame } from './views/renderGame.js';
 import { indexToPoint, pointToIndex } from './point.js';
 
@@ -80,6 +81,8 @@ function handleClick(state, event) {
       return nextStoryDialog(state);
     case ACTIONS.NEXT_LEVEL:
       return nextLevel(state);
+    case ACTIONS.GAME_OVER:
+      return gameOver(state);
     default:
       // console.warn('unknown action', nextAction);
   }

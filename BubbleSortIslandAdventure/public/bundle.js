@@ -9,6 +9,7 @@
     SWAP_ISLANDS: 'SWAP_ISLANDS',
     NEXT_STORY: 'NEXT_STORY',
     NEXT_LEVEL: 'NEXT_LEVEL',
+    GAME_OVER: 'GAME_OVER',
   };
 
   //
@@ -202,6 +203,9 @@
       {x: 0, y: 0, spritesheet: 'img-visitor', sprite: 0},
       {x: 1, y: 0, spritesheet: 'img-visitor', sprite: 1},
       {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
+
+      {x: 1, y: 3, spritesheet: 'img-number', sprite: 1},
+      {x: 3, y: 3, spritesheet: 'img-number', sprite: 3},
     ],
   }];
 
@@ -521,6 +525,18 @@
     });
   });
 
+  /**
+   * Closes the dialog
+   * @return {Promise}
+   */
+  const gameOver =(state) => {
+    // Mark it as animating, FOREVER!!!!
+    markStartAnimation(state);
+    return Promise.all([
+      animateCloseDialog(),
+    ]);
+  };
+
   //
   // Visitor is just a sprite.
   const renderVisitor = ({sprite, spritesheet}) => lighterhtml.html`<div class="visitor"
@@ -589,7 +605,7 @@
     isAnimating: false,
     islands: [],
     storyIndex: 0,
-    level: 0,
+    level: 2,
     visitors: [],
     //
     // Handle's events, updates state, and triggers re-render
@@ -653,6 +669,8 @@
         return nextStoryDialog(state);
       case ACTIONS.NEXT_LEVEL:
         return nextLevel(state);
+      case ACTIONS.GAME_OVER:
+        return gameOver(state);
       default:
         // console.warn('unknown action', nextAction);
     }
