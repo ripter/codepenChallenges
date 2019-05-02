@@ -11,19 +11,13 @@ export function animateSwapIslands(bottomIndex, topIndex) {
     anime({
       autoplay: true,
       targets: `.island:nth-child(${topIndex+1})`,
-      delay: 0,
       duration: ANIMATION_DURATION,
       easing: 'easeOutExpo',
       // easing: 'linear',
       keyframes: [
-        {translateX: [0, '50%'], translateY: [0, '50%']},
-        {translateX: [50, '0%'], translateY: [50, '100%']},
-        // {translateX: [0, '50%'], translateY: [0, '50%'], 'z-index': 500},
-        // {translateX: [50, '0%'], translateY: [50, '100%'], 'z-index': 550},
-
-        // {translateX: '0%', translateY: '0%', 'z-index': 510, delay: 0},
-        // {translateX: '50%', translateY: '50%'},
-        // {translateX: '0%', translateY: '100%', 'z-index': 500},
+        {translateX: '0%', translateY: '0%', 'z-index': 510, duration: 0},
+        {translateX: '50%', translateY: '50%'},
+        {translateX: '0%', translateY: '100%', 'z-index': 550},
       ],
     }).finished,
     anime({
@@ -32,16 +26,10 @@ export function animateSwapIslands(bottomIndex, topIndex) {
       duration: ANIMATION_DURATION,
       easing: 'easeOutCirc',
       // easing: 'linear',
-      delay: 0,
       keyframes: [
-        {translateX: [0, '-50%'], translateY: [0, '-50%']},
-        {translateX: [-50, '0%'], translateY: [-50, '-100%']},
-        // {translateX: [0, '-50%'], translateY: [0, '-50%'], 'z-index': 550},
-        // {translateX: [-50, '0%'], translateY: [-50, '-100%'], 'z-index': 500},
-
-        // {translateX: '0%', translateY: '0%', 'z-index': 510},
-        // {translateX: '-50%', translateY: '-50%'},
-        // {translateX: '0%', translateY: '-100%', 'z-index': 500},
+        {translateX: '0%', translateY: '0%', 'z-index': 510, duration: 0},
+        {translateX: '-50%', translateY: '-50%'},
+        {translateX: '0%', translateY: '-100%', 'z-index': 500},
       ],
     }).finished,
   ]).then(() => {
@@ -54,7 +42,7 @@ export function animateSwapIslands(bottomIndex, topIndex) {
 function resetTransforms(elm) {
   const { zIndex } = elm.dataset;
   elm.style.transform = '';
-  // elm.style.zIndex = zIndex;
+  elm.style.zIndex = zIndex;
   delete elm.dataset.zIndex;
   return elm;
 }
