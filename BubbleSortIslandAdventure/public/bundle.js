@@ -165,7 +165,7 @@
         label: 'It was fun!',
         action: ACTIONS.GAME_OVER,
       },
-    }
+    },
   ];
 
   //
@@ -654,7 +654,7 @@
       case ACTIONS.NEXT_LEVEL:
         return nextLevel(state);
       default:
-        console.warn('unknown action', nextAction);
+        // console.warn('unknown action', nextAction);
     }
 
     return state;

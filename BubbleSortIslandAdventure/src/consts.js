@@ -162,7 +162,7 @@ export const STORY = [
       label: 'It was fun!',
       action: ACTIONS.GAME_OVER,
     },
-  }
+  },
 ];
 
 //

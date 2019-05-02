@@ -81,7 +81,7 @@ function handleClick(state, event) {
     case ACTIONS.NEXT_LEVEL:
       return nextLevel(state);
     default:
-      console.warn('unknown action', nextAction);
+      // console.warn('unknown action', nextAction);
   }
 
   return state;
