@@ -17,7 +17,7 @@ const gameState = window.gameState = {
   isAnimating: false,
   islands: [],
   storyIndex: 0,
-  level: 2,
+  level: 0,
   visitors: [],
   //
   // Handle's events, updates state, and triggers re-render
