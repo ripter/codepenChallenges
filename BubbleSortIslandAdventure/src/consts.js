@@ -175,7 +175,7 @@ export const LEVELS = [{
     {x: 2, y: 2, spritesheet: 'img-number', sprite: 3},
     {x: 3, y: 2, spritesheet: 'img-number', sprite: 4},
     {x: 4, y: 2, spritesheet: 'img-number', sprite: 5},
-    {x: 0, y: 0, spritesheet: 'img-golem-1', sprite: 'forward'},
+    {x: 0, y: 0, spritesheet: 'img-visitor', sprite: 'dog'},
   ],
 }, {
   mobs: [
@@ -185,9 +185,9 @@ export const LEVELS = [{
     {x: 3, y: 1, spritesheet: 'img-water', sprite: 0},
     {x: 4, y: 2, spritesheet: 'img-water', sprite: 4},
     {x: 3, y: 2, spritesheet: 'img-water', sprite: 2},
-    {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 'chicken'},
-    {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 'chicken'},
-    {x: 1, y: 2, spritesheet: 'img-golem-1', sprite: 'forward'},
+    {x: 0, y: 3, spritesheet: 'img-visitor', sprite: 'dog'},
+    // {x: 2, y: 0, spritesheet: 'img-visitor', sprite: 'chicken'},
+    {x: 1, y: 2, spritesheet: 'img-visitor', sprite: 'cow'},
   ],
 }, {
   mobs: [
