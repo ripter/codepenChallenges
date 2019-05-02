@@ -1,5 +1,4 @@
 .PHONY: all server clean build deploy
-NODE_BIN=./node_modules/.bin
 
 all: deploy server
 
