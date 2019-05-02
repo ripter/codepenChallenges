@@ -10,13 +10,19 @@ import { FLOOR_SIZE } from '../consts.js';
  */
 export const destroyIsland = wrapForAnimation((state) => {
   const { visitors } = state;
+  console.log('setting explode audio!');
   state.set({
     visitors: randomizeVisitors(visitors),
+    audio: 'explode',
   });
   return Promise.all([
     animateCloseDialog(),
     animateDestoryIsland(),
-  ]);
+  ]).then(() => {
+    state.set({
+      audio: null,
+    });
+  });
 });
 
 /**
