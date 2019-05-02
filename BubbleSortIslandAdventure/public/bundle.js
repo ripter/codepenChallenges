@@ -555,6 +555,12 @@
     ]);
   };
 
+  function renderAudio(elm, state) {
+    lighterhtml.render(elm, () => lighterhtml.html`<audio controls>
+    <source src="var(--sfx--explode)" />
+  </audio>`);
+  }
+
   //
   // Visitor is just a sprite.
   const renderVisitor = ({sprite, spritesheet}) => lighterhtml.html`<div class="visitor"
@@ -612,6 +618,7 @@
    * @param  {Object} state [description]
    */
   function renderGame(state) {
+    renderAudio(window.elAudio, state);
     renderIslands(window.canvas, state);
     renderDialog(window.elDialog, state);
   }
