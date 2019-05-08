@@ -10,9 +10,36 @@
 
   class HyperspaceGLSL {
     constructor(webGL) {
-      // super();
       this.webGL = webGL;
       this.program = createProgram(webGL, this.vertexShader, this.fragmentShader);
+    }
+
+    // Uses the program on WebGL
+    use() {
+      const { webGL, program } = this;
+      webGL.useProgram(program);
+    }
+
+
+    set currentTime(time) {
+      const { webGL, program } = this;
+      const ptrLocation = webGL.getUniformLocation(program, 'iTime');
+      webGL.uniform1f(ptrLocation, time);
+    }
+    set points(data) {
+      const { webGL, program } = this;
+      // Get a pointer to the location of the attribute in the program
+      const ptrPoints = webGL.getAttribLocation(program, 'a_position');
+      webGL.enableVertexAttribArray(ptrPoints);
+
+      // Create a buffer at webGL.ARRAY_BUFFER for us to bind data.
+      const buffer = webGL.createBuffer();
+      webGL.bindBuffer(webGL.ARRAY_BUFFER, buffer);
+
+      // Copy the data into webGL.ARRAY_BUFFER
+      webGL.bufferData(webGL.ARRAY_BUFFER, new Float32Array(data), webGL.STATIC_DRAW);
+      // Binds the data at webGL.ARRAY_BUFFER to the attribute
+      webGL.vertexAttribPointer(ptrPoints, 2, webGL.FLOAT, false, 0, 0);
     }
 
     get vertexShader() {
@@ -48,7 +75,7 @@
 precision mediump float;
 
 //TODO: use attributes/uniforms
-float iTime = 1.0;
+uniform float iTime;
 vec4 iMouse = vec4(10.0, 15.0, 0.0, 0.0);
 vec3 iResolution = vec3(400.0, 300.0, 0.0);
 
@@ -155,6 +182,7 @@ void main() {
     webGL.deleteProgram(program);
   }
 
+
   //
   // Main
   function main() {
@@ -164,54 +192,37 @@ void main() {
      alert('Your browser does not support WebGL.');
      return;
     }
-
     webGL.viewport(0, 0, webGL.canvas.width, webGL.canvas.height);
 
-
-
-
-    // x,y pairs. Every three will make a triangle.
-    // two triangles to cover the entire space.
-    //TODO: probably not needed
-    const positions = [
-      -1, 1,
-      1, 1,
-      -1, -1,
-
-      1, 1,
-      1, -1,
-      -1, -1,
-    ];
-
-    const hyperspace = new HyperspaceGLSL(webGL);
-    // Create the program to use
-    const program = hyperspace.program;
-
-    // Get the location for a_position so we can set it.
-    const positionAttributeLocation = webGL.getAttribLocation(program, 'a_position');
-    webGL.enableVertexAttribArray(positionAttributeLocation);
-
-    // Create a buffer at webGL.ARRAY_BUFFER for us to bind data.
-    const positionBuffer = webGL.createBuffer();
-    webGL.bindBuffer(webGL.ARRAY_BUFFER, positionBuffer);
-
-    // Copy the data into webGL.ARRAY_BUFFER
-    webGL.bufferData(webGL.ARRAY_BUFFER, new Float32Array(positions), webGL.STATIC_DRAW);
-    // Binds the data at webGL.ARRAY_BUFFER to the attribute a_position
-    webGL.vertexAttribPointer(positionAttributeLocation, 2, webGL.FLOAT, false, 0, 0);
-
-
-
-
-
-    // Clear the canvas
-    webGL.clearColor(0, 0, 0, 0);
-    webGL.clear(webGL.COLOR_BUFFER_BIT);
-    // Tell it to use our program (pair of shaders)
-    webGL.useProgram(program);
+    // Two triangles to cover the entire space.
+    // I feel like there is a better way, but I currently do not know it.
+    const points = [-1, 1, 1, 1, -1, -1,
+      1, 1, 1, -1, -1, -1,];
     // Every point is two positions. `x,y`
-    const numberOfTriangles = positions.length/2;
-    webGL.drawArrays(webGL.TRIANGLES, 0, numberOfTriangles);
+    const numberOfTriangles = points.length/2;
+
+
+    // Create the GLSL program and start using it.
+    const hyperspace = new HyperspaceGLSL(webGL);
+    hyperspace.points = points;
+    hyperspace.use();
+
+    // Animate it!
+    const animate = (time) => {
+      requestAnimationFrame(animate);
+      console.log('animate loop', time);
+
+      // Clear the canvas
+      webGL.clearColor(0, 0, 0, 0);
+      webGL.clear(webGL.COLOR_BUFFER_BIT);
+
+      // Update the time
+      hyperspace.currentTime = time/1000;
+      // Re-draw
+      webGL.drawArrays(webGL.TRIANGLES, 0, numberOfTriangles);
+    };
+
+    animate(0);
   }
   main();
 
