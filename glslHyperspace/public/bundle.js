@@ -7,7 +7,8 @@
   // https://www.khronos.org/files/opengles_shading_language.pdf
   // https://www.shadertoy.com/view/4lsXRl
 
-
+  //
+  // Helper class to workwith the WebGL program.
   class HyperspaceGLSL {
     constructor(webGL) {
       this.webGL = webGL;
@@ -23,7 +24,7 @@
 
     set currentTime(time) {
       const { webGL, program } = this;
-      const ptrLocation = webGL.getUniformLocation(program, 'iTime');
+      const ptrLocation = webGL.getUniformLocation(program, 'currentTime');
       webGL.uniform1f(ptrLocation, time);
     }
     set points(data) {
@@ -75,7 +76,7 @@
 precision mediump float;
 
 //TODO: use attributes/uniforms
-uniform float iTime;
+uniform float currentTime;
 vec4 iMouse = vec4(10.0, 15.0, 0.0, 0.0);
 vec3 iResolution = vec3(400.0, 300.0, 0.0);
 
@@ -100,7 +101,7 @@ vec4 mapStar(vec2 position, float lightSpeed, float angleOffset) {
 
   float random = rand(floor(angle * angleNumber) * 100.);
   float distance = random;
-  distance += iTime * 2.;
+  distance += currentTime * 2.;
   distance = fract(distance);
 
   float fragDistance = length(position);
@@ -124,13 +125,13 @@ vec4 mapStar(vec2 position, float lightSpeed, float angleOffset) {
   color.a *= 1. - angleCenter;
 
   color.a *= smoothstep(0., 1., fragDistance);
-  color.a *= cos(random * iTime) * .5 + .5;
+  color.a *= cos(random * currentTime) * .5 + .5;
 
   return color;
 }
 
 void main() {
-  float lightSpeed = cos(iTime) * .5 + .5;
+  float lightSpeed = cos(currentTime) * .5 + .5;
   // lightSpeed = 1. - iMouse.x / iResolution.x;
   lightSpeed = 1.0;
   //lightSpeed = 0.95
@@ -209,9 +210,8 @@ void main() {
 
     // Animate it!
     const animate = (time) => {
+      // Loop forever!
       requestAnimationFrame(animate);
-      console.log('animate loop', time);
-
       // Clear the canvas
       webGL.clearColor(0, 0, 0, 0);
       webGL.clear(webGL.COLOR_BUFFER_BIT);
