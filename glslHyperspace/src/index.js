@@ -4,19 +4,41 @@
 // https://www.khronos.org/files/opengles_shading_language.pdf
 // https://www.shadertoy.com/view/4lsXRl
 
-//
-// Returns the Hyperspace GLSL program, compiled.
-function programHyperspace(webGL) {
-  const vertexShaderSource = `
-  // an attribute will receive data from a buffer
-  attribute vec2 a_position;
-  // all shaders have a main function
-  void main() {
-    // gl_Position is a special variable a vertex shader
-    // is responsible for setting
-    gl_Position = vec4(a_position, 0.0, 1.0);
-  }`;
-  const fragmentShaderSource = `
+
+class HyperspaceGLSL {
+  constructor(webGL) {
+    this.webGL = webGL;
+    this.program = createProgram(webGL, this.vertexShader, this.fragmentShader);
+  }
+
+  get vertexShader() {
+    const { webGL, vertexShaderSource } = this;
+    if (!this._vertexShader) {
+      this._vertexShader = createShader(webGL, webGL.VERTEX_SHADER, vertexShaderSource);
+    }
+    return this._vertexShader;
+  }
+  get vertexShaderSource() {
+    return `
+    // an attribute will receive data from a buffer
+    attribute vec2 a_position;
+    // all shaders have a main function
+    void main() {
+      // gl_Position is a special variable a vertex shader
+      // is responsible for setting
+      gl_Position = vec4(a_position, 0.0, 1.0);
+    }`;
+  }
+
+  get fragmentShader() {
+    const { webGL, fragmentShaderSource } = this;
+    if (!this._fragmentShader) {
+      this._fragmentShader = createShader(webGL, webGL.FRAGMENT_SHADER, fragmentShaderSource);
+    }
+    return this._fragmentShader;
+  }
+  get fragmentShaderSource() {
+    return `
 // fragment shaders don't have a default precision so we need
 // to pick one. mediump is a good default. It means "medium precision"
 precision mediump float;
@@ -96,16 +118,11 @@ void main() {
   // is responsible for setting
   gl_FragColor = color;
   // gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
+}`;
+  }
 }
- `;
 
-  // Load the shaders
-  const vertexShader = createShader(webGL, webGL.VERTEX_SHADER, vertexShaderSource);
-  const fragmentShader = createShader(webGL, webGL.FRAGMENT_SHADER, fragmentShaderSource);
-  // Create the program
-  const program = createProgram(webGL, vertexShader, fragmentShader);
-  return program;
-}
+
 
 // Returns a WebGL Shader from source string
 // Type is: webGL.VERTEX_SHADER or webGL.FRAGMENT_SHADER
@@ -162,8 +179,9 @@ function main() {
     -1, -1,
   ];
 
+  const hyperspace = new HyperspaceGLSL(webGL);
   // Create the program to use
-  const program = programHyperspace(webGL);
+  const program = hyperspace.program;
 
   // Get the location for a_position so we can set it.
   const positionAttributeLocation = webGL.getAttribLocation(program, 'a_position');
