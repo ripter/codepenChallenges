@@ -47,27 +47,22 @@ class HyperspaceGLSL {
   }
 
   get vertexShader() {
-    const { webGL, vertexShaderSource } = this;
+    const { webGL } = this;
+    // Because GLSL isn't JS, and it's long, I'm storing it in a script tag.
+    const vertexShaderSource = window.elVertexShaderSource.text;
     if (!this._vertexShader) {
       this._vertexShader = createShader(webGL, webGL.VERTEX_SHADER, vertexShaderSource);
     }
     return this._vertexShader;
   }
-  get vertexShaderSource() {
-    // Because GLSL isn't JS, and it's long, I'm storing it in a script tag.
-    return window.elVertexShaderSource.text;
-  }
-
   get fragmentShader() {
-    const { webGL, fragmentShaderSource } = this;
+    const { webGL } = this;
+    // Because GLSL isn't JS, and it's long, I'm storing it in a script tag.
+    const fragmentShaderSource = window.elFragmentShaderSource.text;
     if (!this._fragmentShader) {
       this._fragmentShader = createShader(webGL, webGL.FRAGMENT_SHADER, fragmentShaderSource);
     }
     return this._fragmentShader;
-  }
-  get fragmentShaderSource() {
-    // Because GLSL isn't JS, and it's long, I'm storing it in a script tag.
-    return window.elFragmentShaderSource.text;
   }
 }
 
@@ -127,7 +122,7 @@ function main() {
 
 
   // Create the GLSL program and start using it.
-  const hyperspace = window.vfx = new HyperspaceGLSL(webGL);
+  const hyperspace = window.VFX = new HyperspaceGLSL(webGL);
   hyperspace.points = points;
   hyperspace.percentOfLightspeed = 0.5;
 
