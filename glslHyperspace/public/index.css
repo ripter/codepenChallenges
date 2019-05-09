@@ -1,3 +1,9 @@
 #elCanvas {
   border: thin solid black;
+  width: 100vw;
+  height: 90vh;
+}
+
+.hyperdrive {
+  height: 2em;
 }
