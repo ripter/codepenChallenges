@@ -13,6 +13,8 @@
     constructor(webGL) {
       this.webGL = webGL;
       this.program = createProgram(webGL, this.vertexShader, this.fragmentShader);
+      this.use();
+      this.setResolution();
     }
 
     // Uses the program on WebGL
@@ -21,26 +23,36 @@
       webGL.useProgram(program);
     }
 
+    setResolution() {
+      const { webGL, program } = this;
+      const ptrLocation = webGL.getUniformLocation(program, 'resolution');
+      webGL.uniform2fv(ptrLocation, [webGL.canvas.width, webGL.canvas.height]);
+    }
 
-    set currentTime(time) {
+    set percentOfLightspeed(value) {
+      const { webGL, program } = this;
+      const ptrLocation = webGL.getUniformLocation(program, 'percentOfLightspeed');
+      webGL.uniform1f(ptrLocation, value);
+    }
+    set currentTime(value) {
       const { webGL, program } = this;
       const ptrLocation = webGL.getUniformLocation(program, 'currentTime');
-      webGL.uniform1f(ptrLocation, time);
+      webGL.uniform1f(ptrLocation, value);
     }
-    set points(data) {
+    set points(value) {
       const { webGL, program } = this;
       // Get a pointer to the location of the attribute in the program
-      const ptrPoints = webGL.getAttribLocation(program, 'a_position');
-      webGL.enableVertexAttribArray(ptrPoints);
+      const ptrLocation = webGL.getAttribLocation(program, 'points');
+      webGL.enableVertexAttribArray(ptrLocation);
 
       // Create a buffer at webGL.ARRAY_BUFFER for us to bind data.
       const buffer = webGL.createBuffer();
       webGL.bindBuffer(webGL.ARRAY_BUFFER, buffer);
 
       // Copy the data into webGL.ARRAY_BUFFER
-      webGL.bufferData(webGL.ARRAY_BUFFER, new Float32Array(data), webGL.STATIC_DRAW);
+      webGL.bufferData(webGL.ARRAY_BUFFER, new Float32Array(value), webGL.STATIC_DRAW);
       // Binds the data at webGL.ARRAY_BUFFER to the attribute
-      webGL.vertexAttribPointer(ptrPoints, 2, webGL.FLOAT, false, 0, 0);
+      webGL.vertexAttribPointer(ptrLocation, 2, webGL.FLOAT, false, 0, 0);
     }
 
     get vertexShader() {
@@ -53,12 +65,12 @@
     get vertexShaderSource() {
       return `
     // an attribute will receive data from a buffer
-    attribute vec2 a_position;
+    attribute vec2 points;
     // all shaders have a main function
     void main() {
       // gl_Position is a special variable a vertex shader
       // is responsible for setting
-      gl_Position = vec4(a_position, 0.0, 1.0);
+      gl_Position = vec4(points, 0.0, 1.0);
     }`;
     }
 
@@ -75,10 +87,9 @@
 // to pick one. mediump is a good default. It means "medium precision"
 precision mediump float;
 
-//TODO: use attributes/uniforms
 uniform float currentTime;
-vec4 iMouse = vec4(10.0, 15.0, 0.0, 0.0);
-vec3 iResolution = vec3(400.0, 300.0, 0.0);
+uniform float percentOfLightspeed;
+uniform vec2 resolution;
 
 
 vec2 hash(vec2 p) {
@@ -130,26 +141,21 @@ vec4 mapStar(vec2 position, float lightSpeed, float angleOffset) {
   return color;
 }
 
+// all shaders have a main function
 void main() {
-  float lightSpeed = cos(currentTime) * .5 + .5;
-  // lightSpeed = 1. - iMouse.x / iResolution.x;
-  lightSpeed = 1.0;
-  //lightSpeed = 0.95
-
-	vec2 uv = gl_FragCoord.xy / iResolution.xy;
+	vec2 uv = gl_FragCoord.xy / resolution.xy;
   vec2 position = uv * 2. - 1.;
-  position.y *= iResolution.y / iResolution.x;
+  position.y *= resolution.y / resolution.x;
 
   vec4 color = vec4(0.05, 0.05, 0.05, 1.0);
   for(float i = 0.; i < 2.; i++) {
-  	vec4 starColor = mapStar(position, lightSpeed, i * 20.);
-      color.rgb += starColor.rgb * starColor.a;
+  	vec4 starColor = mapStar(position, percentOfLightspeed, i * 20.);
+    color.rgb += starColor.rgb * starColor.a;
   }
 
   // gl_FragColor is a special variable a fragment shader
   // is responsible for setting
   gl_FragColor = color;
-  // gl_FragColor = vec4(1.0, 0.5, 0.0, 1.0);
 }`;
     }
   }
@@ -188,12 +194,14 @@ void main() {
   // Main
   function main() {
     const elCanvas = window.elCanvas;
+    const elLightSpeed = window.elLightSpeed;
     const webGL = window.webGL = elCanvas.getContext("webgl");
     if (!webGL) {
      alert('Your browser does not support WebGL.');
      return;
     }
     webGL.viewport(0, 0, webGL.canvas.width, webGL.canvas.height);
+
 
     // Two triangles to cover the entire space.
     // I feel like there is a better way, but I currently do not know it.
@@ -204,9 +212,9 @@ void main() {
 
 
     // Create the GLSL program and start using it.
-    const hyperspace = new HyperspaceGLSL(webGL);
+    const hyperspace = window.vfx = new HyperspaceGLSL(webGL);
     hyperspace.points = points;
-    hyperspace.use();
+    hyperspace.percentOfLightspeed = 0.5;
 
     // Animate it!
     const animate = (time) => {
@@ -221,6 +229,14 @@ void main() {
       // Re-draw
       webGL.drawArrays(webGL.TRIANGLES, 0, numberOfTriangles);
     };
+
+    //
+    // User input!
+    elLightSpeed.addEventListener('change', (event) => {
+      const { target } = event;
+      const newSpeed = parseInt(target.value, 10);
+      hyperspace.percentOfLightspeed = newSpeed/100;
+    });
 
     animate(0);
   }
