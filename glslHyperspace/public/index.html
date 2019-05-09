@@ -28,10 +28,9 @@
 
     float rand(float n) {
       return fract(sin(n) * 43758.5453123);
-    }
-
-    float rand(vec2 n) {
-      return fract(sin(dot(n, vec2(12.9898, 4.1414))) * 43758.5453);
+      // return fract(sin(n) * 10.);
+      // return sin(n);
+      // return cos(n);
     }
 
     vec4 mapStar(vec2 position, float lightSpeed, float angleOffset) {
@@ -79,6 +78,7 @@
       vec4 color = vec4(0.05, 0.05, 0.05, 1.0);
       for(float i = 0.; i < 2.; i++) {
       	vec4 starColor = mapStar(position, percentOfLightspeed, i * 20.);
+      	// vec4 starColor = mapStar(position, percentOfLightspeed, i);
         color.rgb += starColor.rgb * starColor.a;
       }
 

@@ -130,9 +130,17 @@
     hyperspace.percentOfLightspeed = 0.5;
 
     // Animate it!
+    let lastTick = 0;
     const animate = (time) => {
       // Loop forever!
       requestAnimationFrame(animate);
+      // Limit running speed
+      const delta = time -lastTick;
+      if (delta < 500) {
+        return;
+      }
+      lastTick = time;
+
       // Clear the canvas
       webGL.clearColor(0, 0, 0, 0);
       webGL.clear(webGL.COLOR_BUFFER_BIT);
