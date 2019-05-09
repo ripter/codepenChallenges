@@ -24,11 +24,9 @@
 
     uniform float currentTime;
     uniform float percentOfLightspeed;
-    uniform float randomSeed;
     uniform vec2 resolution;
 
     float rand(float n) {
-      // return fract(sin(n) * (randomSeed * 1000000.));
       return fract(sin(n) * 43758.5453123);
     }
 
@@ -76,7 +74,6 @@
       vec4 color = vec4(0.05, 0.05, 0.05, 1.0);
       for(float i = 0.; i < 2.; i++) {
       	vec4 starColor = mapStar(position, percentOfLightspeed, i * 20.);
-      	// vec4 starColor = mapStar(position, percentOfLightspeed, i);
         color.rgb += starColor.rgb * starColor.a;
       }
 
