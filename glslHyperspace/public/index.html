@@ -24,13 +24,12 @@
 
     uniform float currentTime;
     uniform float percentOfLightspeed;
+    uniform float randomSeed;
     uniform vec2 resolution;
 
     float rand(float n) {
+      // return fract(sin(n) * (randomSeed * 1000000.));
       return fract(sin(n) * 43758.5453123);
-      // return fract(sin(n) * 10.);
-      // return sin(n);
-      // return cos(n);
     }
 
     vec4 mapStar(vec2 position, float lightSpeed, float angleOffset) {
@@ -38,13 +37,12 @@
     	float angle = atan(position.y, position.x) + angleOffset;
       float angleNumber = 20.;
 
-      float random = rand(floor(angle * angleNumber) * 100.);
+      float random = rand(floor(angle * angleNumber) * 10.);
       float distance = random;
       distance += currentTime * 2.;
       distance = fract(distance);
 
       float fragDistance = length(position);
-
       float size = smoothstep(-.1, 2., lightSpeed);
 
       float bounded = step(distance, fragDistance) * step(fragDistance, distance + size);

@@ -20,6 +20,11 @@ class HyperspaceGLSL {
     webGL.uniform2fv(ptrLocation, [webGL.canvas.width, webGL.canvas.height]);
   }
 
+  set randomSeed(value) {
+    const { webGL, program } = this;
+    const ptrLocation = webGL.getUniformLocation(program, 'randomSeed');
+    webGL.uniform1f(ptrLocation, value);
+  }
   set percentOfLightspeed(value) {
     const { webGL, program } = this;
     const ptrLocation = webGL.getUniformLocation(program, 'percentOfLightspeed');
@@ -133,7 +138,7 @@ function main() {
     requestAnimationFrame(animate);
     // Limit running speed
     const delta = time -lastTick;
-    if (delta < 500) {
+    if (delta < 5) {
       return;
     }
     lastTick = time;
@@ -143,7 +148,10 @@ function main() {
     webGL.clear(webGL.COLOR_BUFFER_BIT);
 
     // Update the time
+    const randomSeed = Math.random();
+    // console.log('currentTime:', time/1000, 'randomSeed', randomSeed);
     hyperspace.currentTime = time/1000;
+    hyperspace.randomSeed = randomSeed;
     // Re-draw
     webGL.drawArrays(webGL.TRIANGLES, 0, numberOfTriangles);
   };
