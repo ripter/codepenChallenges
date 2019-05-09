@@ -13,14 +13,8 @@
     constructor(webGL) {
       this.webGL = webGL;
       this.program = createProgram(webGL, this.vertexShader, this.fragmentShader);
-      this.use();
+      webGL.useProgram(this.program);
       this.setResolution();
-    }
-
-    // Uses the program on WebGL
-    use() {
-      const { webGL, program } = this;
-      webGL.useProgram(program);
     }
 
     setResolution() {
@@ -161,7 +155,6 @@ void main() {
   }
 
 
-
   // Returns a WebGL Shader from source string
   // Type is: webGL.VERTEX_SHADER or webGL.FRAGMENT_SHADER
   function createShader(webGL, type, source) {
@@ -172,8 +165,10 @@ void main() {
     if (success) {
       return shader;
     }
+    // eslint-disable-next-line no-console
     console.log(webGL.getShaderInfoLog(shader));
     webGL.deleteShader(shader);
+    return null;
   }
   // Returns WebGL program from two shaders.
   function createProgram(webGL, vertexShader, fragmentShader) {
@@ -185,8 +180,10 @@ void main() {
     if (success) {
       return program;
     }
+    // eslint-disable-next-line no-console
     console.log(webGL.getProgramInfoLog(program));
     webGL.deleteProgram(program);
+    return null;
   }
 
 
@@ -195,10 +192,11 @@ void main() {
   function main() {
     const elCanvas = window.elCanvas;
     const elLightSpeed = window.elLightSpeed;
-    const webGL = window.webGL = elCanvas.getContext("webgl");
+    const webGL = window.webGL = elCanvas.getContext('webgl');
     if (!webGL) {
-     alert('Your browser does not support WebGL.');
-     return;
+      // eslint-disable-next-line no-alert
+      alert('Your browser does not support WebGL.');
+      return;
     }
     webGL.viewport(0, 0, webGL.canvas.width, webGL.canvas.height);
 
@@ -206,7 +204,7 @@ void main() {
     // Two triangles to cover the entire space.
     // I feel like there is a better way, but I currently do not know it.
     const points = [-1, 1, 1, 1, -1, -1,
-      1, 1, 1, -1, -1, -1,];
+      1, 1, 1, -1, -1, -1];
     // Every point is two positions. `x,y`
     const numberOfTriangles = points.length/2;
 
