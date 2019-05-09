@@ -135,10 +135,13 @@
     hyperspace.percentOfLightspeed = 0.5;
 
     // Animate it!
+    let isRunning = true;
     let lastTick = 0;
     const animate = (time) => {
-      // Loop forever!
-      requestAnimationFrame(animate);
+      // Loop
+      if (isRunning) {
+        requestAnimationFrame(animate);
+      }
       // Limit running speed
       const delta = time -lastTick;
       if (delta < 5) {
@@ -165,6 +168,16 @@
       const { target } = event;
       const newSpeed = parseInt(target.value, 10);
       hyperspace.percentOfLightspeed = newSpeed/100;
+
+      // Pause when power is removed
+      if (newSpeed === 0) {
+        isRunning = false;
+      }
+      // Restart when power is added.
+      else if (!isRunning) {
+        isRunning = true;
+        animate(0);
+      }
     });
 
     animate(0);
