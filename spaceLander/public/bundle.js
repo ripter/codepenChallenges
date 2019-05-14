@@ -13,17 +13,16 @@
       const y = 0;
       this.size = {
         width: LANDER_WIDTH,
-        height: LANDER_WIDTH * 0.5
+        height: LANDER_WIDTH * 0.5,
       };
       this.body = Matter.Bodies.trapezoid(x, y, this.size.width, this.size.height, 0.7, {
         label: 'player',
         density: 1,
         friction: 0.9,
-        frictionAir: 0.1
+        frictionAir: 0.1,
       });
     }
     fireThruster() {
-      console.log('fireThruster');
       const thrusterAngle = (0| this.body.angle * 100)/100;
       const thrusterOffset = Matter.Vector.create(0, 1);
       // Create a force that matches the thruster's angle.
@@ -50,8 +49,8 @@
         width: WIDTH,
         height: HEIGHT,
         showVelocity: true,
-        showCollisions: true
-      }
+        showCollisions: true,
+      },
     });
 
     // Create the Bodies in the world
@@ -66,7 +65,7 @@
       engine,
       render,
       lander,
-      surface
+      surface,
     };
   }
 
@@ -78,9 +77,9 @@
       constraint: {
         stiffness: 0.2,
         render: {
-          visible: true
-        }
-      }
+          visible: true,
+        },
+      },
     });
   }
 
@@ -88,27 +87,29 @@
   function createSurface(maxWidth) {
     const totalSegments = 0 | (maxWidth / SEGMENT_WIDTH);
     const body = Composite.create({
-      label: 'surface'
+      label: 'surface',
     });
+
     for (let i = 0; i < totalSegments; i++) {
       const x = i * SEGMENT_WIDTH;
       const rnd = 0 | (Math.random() * 6);
       const height = 50 * (rnd + 1);
 
       Composite.add(body, Matter.Bodies.rectangle(
-          x + SEGMENT_WIDTH / 2,
-          HEIGHT - 10,
-          SEGMENT_WIDTH,
-          height,
-          {
-            isStatic: true,
-            friction: 1
-          }
-        )
+        x + SEGMENT_WIDTH / 2,
+        HEIGHT - 10,
+        SEGMENT_WIDTH,
+        height,
+        {
+          isStatic: true,
+          friction: 1,
+        }
+      )
       );
     }
     return body;
   }
+
 
   //
   // Main
@@ -124,10 +125,9 @@
   const inputHandler = {
     handleEvent(event) {
       event.preventDefault();
-      console.log('controlHandler', event);
       // Fire the lander thrusters
       worldState.lander.fireThruster();
-    }
+    },
   };
 
   // Use mousedown instead of click so preventDefault can prevent text selection.
