@@ -1,14 +1,4 @@
-const {
-  Engine,
-  Render,
-  World,
-  Bodies,
-  Body,
-  Composite,
-  Composites,
-  Mouse,
-  MouseConstraint
-} = Matter;
+const { Composite } = Matter;
 const HEIGHT = 375;
 const WIDTH = 812;
 const SEGMENT_WIDTH = 20;
@@ -22,7 +12,7 @@ class SpaceShip {
       width: LANDER_WIDTH,
       height: LANDER_WIDTH * 0.5
     };
-    this.body = Bodies.trapezoid(x, y, this.size.width, this.size.height, 0.7, {
+    this.body = Matter.Bodies.trapezoid(x, y, this.size.width, this.size.height, 0.7, {
       label: 'player',
       density: 1,
       friction: 0.9,
@@ -47,9 +37,9 @@ class SpaceShip {
 // Returns a new gameState initalized and ready to use.
 function initWorld() {
   // create an engine, it holds the world and manages the simulation.
-  const engine = Engine.create();
+  const engine = Matter.Engine.create();
   //create a renderer to display the results on the page.
-  var render = Render.create({
+  var render = Matter.Render.create({
     canvas: window.elCanvas,
     engine: engine,
     options: {
@@ -67,7 +57,7 @@ function initWorld() {
   const mouseConstraint = createMouseControl(render.canvas, engine);
   render.mouse = mouseConstraint;
   // add all of the bodies to the world
-  World.add(engine.world, [lander.body, surface, mouseConstraint]);
+  Matter.World.add(engine.world, [lander.body, surface, mouseConstraint]);
 
   return {
     engine,
@@ -79,8 +69,8 @@ function initWorld() {
 
 // Creates a drag control for non-static bodies.
 function createMouseControl(canvas, engine) {
-  const mouse = Mouse.create(canvas);
-  return MouseConstraint.create(engine, {
+  const mouse = Matter.Mouse.create(canvas);
+  return Matter.MouseConstraint.create(engine, {
     mouse: mouse,
     constraint: {
       stiffness: 0.2,
@@ -104,9 +94,7 @@ function createSurface(maxWidth) {
     const rnd = 0 | (Math.random() * 6);
     const height = 50 * (rnd + 1);
 
-    Composite.add(
-      body,
-      Bodies.rectangle(
+    Composite.add(body, Matter.Bodies.rectangle(
         x + SEGMENT_WIDTH / 2,
         HEIGHT - 10,
         SEGMENT_WIDTH,
@@ -133,9 +121,9 @@ function vectorFromAngle(angle, length) {
 //
 const worldState = initWorld();
 // Starts a requestAnimationFrame re-render as the Engine updates.
-Render.run(worldState.render);
+Matter.Render.run(worldState.render);
 // Start the engine simulating the world
-Engine.run(worldState.engine);
+Matter.Engine.run(worldState.engine);
 
 
 // User Controls
