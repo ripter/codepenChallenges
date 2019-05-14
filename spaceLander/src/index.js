@@ -30,8 +30,14 @@ class SpaceShip {
     });
   }
   fireThruster() {
-    Body.applyForce(this.body, this.body.position, { x: 0, y: -10 });
-    Body.setAngle(this.body, 0);
+    console.log('fireThruster');
+    const thrusterAngle = (0| this.body.angle * 100)/100;
+    const thrusterOffset = Matter.Vector.create(0, 1);
+    // Create a force that matches the thruster's angle.
+    let force = Matter.Vector.rotate(thrusterOffset, thrusterAngle);
+    force = Matter.Vector.mult(force, -15);
+    // Apply the fource to ourself with no torque
+    Matter.Body.applyForce(this.body, this.body.position, force);
   }
 }
 
@@ -49,7 +55,9 @@ function initWorld() {
     options: {
       // iPhone X size Landscape
       width: WIDTH,
-      height: HEIGHT
+      height: HEIGHT,
+      showVelocity: true,
+      showCollisions: true
     }
   });
 
@@ -113,6 +121,13 @@ function createSurface(maxWidth) {
   return body;
 }
 
+function vectorFromAngle(angle, length) {
+  if (arguments.length === 1) {
+    length = 1;
+  }
+  return Matter.Vector.create(length * Math.cos(angle), length * Math.sin(angle));
+}
+
 //
 // Main
 //
@@ -122,10 +137,19 @@ Render.run(worldState.render);
 // Start the engine simulating the world
 Engine.run(worldState.engine);
 
-// Add Keyboard controls
-document.body.addEventListener('keypress', event => {
-  const { code } = event;
-  if (code.toLowerCase() === 'space') {
+
+// User Controls
+const inputHandler = {
+  handleEvent(event) {
+    event.preventDefault();
+    console.log('controlHandler', event);
+    // Fire the lander thrusters
     worldState.lander.fireThruster();
   }
+};
+
+// Use mousedown instead of click so preventDefault can prevent text selection.
+// Use touchend instead of click so preventDefault can prevent iOS zoom when the button is tapped quickly.
+['mousedown', 'touchend', 'keypress'].forEach((eventName) => {
+  window.addEventListener(eventName, inputHandler);
 });

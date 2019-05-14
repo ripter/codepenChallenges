@@ -26,15 +26,21 @@
         height: LANDER_WIDTH * 0.5
       };
       this.body = Bodies.trapezoid(x, y, this.size.width, this.size.height, 0.7, {
-        label: "player",
+        label: 'player',
         density: 1,
         friction: 0.9,
         frictionAir: 0.1
       });
     }
     fireThruster() {
-      Body.applyForce(this.body, this.body.position, { x: 0, y: -10 });
-      Body.setAngle(this.body, 0);
+      console.log('fireThruster');
+      const thrusterAngle = (0| this.body.angle * 100)/100;
+      const thrusterOffset = Matter.Vector.create(0, 1);
+      // Create a force that matches the thruster's angle.
+      let force = Matter.Vector.rotate(thrusterOffset, thrusterAngle);
+      force = Matter.Vector.mult(force, -15);
+      // Apply the fource to ourself with no torque
+      Matter.Body.applyForce(this.body, this.body.position, force);
     }
   }
 
@@ -52,7 +58,9 @@
       options: {
         // iPhone X size Landscape
         width: WIDTH,
-        height: HEIGHT
+        height: HEIGHT,
+        showVelocity: true,
+        showCollisions: true
       }
     });
 
@@ -68,7 +76,7 @@
       engine,
       render,
       lander,
-      surface,
+      surface
     };
   }
 
@@ -90,7 +98,7 @@
   function createSurface(maxWidth) {
     const totalSegments = 0 | (maxWidth / SEGMENT_WIDTH);
     const body = Composite.create({
-      label: "surface"
+      label: 'surface'
     });
     for (let i = 0; i < totalSegments; i++) {
       const x = i * SEGMENT_WIDTH;
@@ -123,12 +131,21 @@
   // Start the engine simulating the world
   Engine.run(worldState.engine);
 
-  // Add Keyboard controls
-  document.body.addEventListener("keypress", event => {
-    const { code } = event;
-    if (code.toLowerCase() === "space") {
+
+  // User Controls
+  const inputHandler = {
+    handleEvent(event) {
+      event.preventDefault();
+      console.log('controlHandler', event);
+      // Fire the lander thrusters
       worldState.lander.fireThruster();
     }
+  };
+
+  // Use mousedown instead of click so preventDefault can prevent text selection.
+  // Use touchend instead of click so preventDefault can prevent iOS zoom when the button is tapped quickly.
+  ['mousedown', 'touchend', 'keypress'].forEach((eventName) => {
+    window.addEventListener(eventName, inputHandler);
   });
 
 }());

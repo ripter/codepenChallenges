@@ -1,4 +1,22 @@
 #elCanvas {
   height: 375px;
   width: 812px;
+  z-index: 1;
+}
+
+.controls {
+  position: fixed;
+  bottom: 0em;
+  background-color: #fff;
+  z-index: 500;
+}
+.key--space {
+  border: thin solid #ddd;
+  cursor: pointer;
+  text-align: center;
+  width: 40vw;
+
+  font-size: 2em;
+  height: 1em;
+  line-height: 1em;
 }
