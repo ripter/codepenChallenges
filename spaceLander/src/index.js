@@ -112,12 +112,6 @@ function createSurface(maxWidth) {
 // Main
 //
 const worldState = initWorld();
-// Starts a requestAnimationFrame re-render as the Engine updates.
-Matter.Render.run(worldState.render);
-// Start the engine simulating the world
-Matter.Engine.run(worldState.engine);
-
-
 // User Controls
 const inputHandler = {
   handleEvent(event) {
@@ -126,6 +120,11 @@ const inputHandler = {
     worldState.lander.fireThruster();
   },
 };
+
+// Starts a requestAnimationFrame re-render as the Engine updates.
+Matter.Render.run(worldState.render);
+// Start the engine simulating the world
+Matter.Engine.run(worldState.engine);
 
 // Use mousedown instead of click so preventDefault can prevent text selection.
 // Use touchend instead of click so preventDefault can prevent iOS zoom when the button is tapped quickly.
