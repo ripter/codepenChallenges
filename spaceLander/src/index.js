@@ -165,7 +165,6 @@ const inputHandler = {
     event.preventDefault();
     const { target, code } = event;
     let action = target.getAttribute('action') || code;
-    console.log(action, event.type, event.target, event);
 
     switch (action) {
       case 'ArrowLeft':
