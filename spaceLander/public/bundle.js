@@ -14,6 +14,8 @@
       this.size = {
         width: LANDER_WIDTH,
         height: LANDER_WIDTH * 0.5,
+        halfWidth: LANDER_WIDTH/2,
+        halfHeight: (LANDER_WIDTH * 0.5)/2,
       };
       this.body = Matter.Bodies.trapezoid(x, y, this.size.width, this.size.height, 0.7, {
         label: 'player',
@@ -22,6 +24,8 @@
         frictionAir: 0.1,
       });
     }
+
+    // Fires the main thrusters
     fireThruster() {
       const thrusterAngle = (0| this.body.angle * 100)/100;
       const thrusterOffset = Matter.Vector.create(0, 1);
@@ -31,6 +35,24 @@
       // Apply the fource to ourself with no torque
       Matter.Body.applyForce(this.body, this.body.position, force);
     }
+
+    get thrusterPosition() {
+      const { size } = this;
+      const { position } = this.body;
+        return {
+        x: -size.halfWidth,
+        y: size.halfHeight,
+      };
+      // return {
+      //   x: position.x - size.halfWidth,
+      //   y: position.y + size.halfHeight,
+      // };
+      // const thrusterAngle = (0| this.body.angle * 100)/100;
+      // return Matter.Vector.rotate({
+      //   x: position.x - size.halfWidth,
+      //   y: position.y + size.halfHeight,
+      // }, thrusterAngle);
+    }
   }
 
 
@@ -39,7 +61,9 @@
   // Returns a new gameState initalized and ready to use.
   function initWorld() {
     // create an engine, it holds the world and manages the simulation.
-    const engine = Matter.Engine.create();
+    const engine = Matter.Engine.create({
+      enableSleeping: false,
+    });
     //create a renderer to display the results on the page.
     var render = Matter.Render.create({
       canvas: window.elCanvas,
@@ -60,6 +84,8 @@
     render.mouse = mouseConstraint;
     // add all of the bodies to the world
     Matter.World.add(engine.world, [lander.body, surface, mouseConstraint]);
+    // Adjust the gravity for the alien planet.
+    engine.world.gravity.y = 0.5;
 
     return {
       engine,
@@ -95,17 +121,15 @@
       const rnd = 0 | (Math.random() * 6);
       const height = 50 * (rnd + 1);
 
-      Composite.add(body, Matter.Bodies.rectangle(
-        x + SEGMENT_WIDTH / 2,
-        HEIGHT - 10,
-        SEGMENT_WIDTH,
-        height,
-        {
+      Composite.add(body, Matter.Bodies.rectangle(x + SEGMENT_WIDTH / 2, HEIGHT - 10,
+        SEGMENT_WIDTH, height, {
           isStatic: true,
           friction: 1,
-        }
-      )
-      );
+          // render: {
+            // fillStyle: '#FF0000',
+            // lineWidth: 0,
+          // },
+      }));
     }
     return body;
   }
@@ -120,8 +144,35 @@
   // Start the engine simulating the world
   Matter.Engine.run(worldState.engine);
 
+  // Render on top of of the rendered bodies.
+  Matter.Events.on(worldState.render, 'afterRender', ({ timestamp }) => {
+    const { context } = worldState.render;
+    const { force, angle, position } = worldState.lander.body;
+    const { thrusterPosition, size } = worldState.lander;
 
-  // User Controls
+    // Apply the same transforms used to render the bodies
+    Matter.Render.startViewTransform(worldState.render);
+
+    // Render some Text
+    context.fillText(`Force: ${force.x}, ${force.y}`, 10, 20);
+
+    // If we have force, show thruster
+    if (force.x !== 0 || force.y !== 0) {
+
+      context.translate(position.x, position.y);
+      context.rotate(angle);
+      context.fillStyle = '#FFDC00';
+      context.fillRect(thrusterPosition.x, thrusterPosition.y, size.width, 75);
+      context.rotate(-angle);
+      context.translate(-position.x, -position.y);
+
+    }
+
+    // Reset the transforms.
+    Matter.Render.endViewTransform(worldState.render);
+  });
+
+  // Handle User Controls
   const inputHandler = {
     handleEvent(event) {
       event.preventDefault();
