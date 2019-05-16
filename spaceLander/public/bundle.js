@@ -5,6 +5,8 @@
   const HEIGHT = 375;
   const WIDTH = 812;
   const SEGMENT_WIDTH = 20;
+  const SEGMENT_HEIGHT = 20;
+  const SEGMENT_MAX_HEIGHT = 16;
   const LANDER_WIDTH = 50;
 
   class SpaceShip {
@@ -114,8 +116,8 @@
 
     for (let i = 0; i < totalSegments; i++) {
       const x = i * SEGMENT_WIDTH;
-      const rnd = 0 | (Math.random() * 6);
-      const height = 50 * (rnd + 1);
+      const rnd = 0 | (Math.random() * SEGMENT_MAX_HEIGHT);
+      const height = SEGMENT_HEIGHT * (rnd + 1);
 
       Composite.add(body, Matter.Bodies.rectangle(x + SEGMENT_WIDTH / 2, HEIGHT - 10,
         SEGMENT_WIDTH, height, {
@@ -141,12 +143,16 @@
     const { context } = worldState.render;
     const { force, angle, position } = worldState.lander.body;
     const { thrusterPosition, size } = worldState.lander;
-
+    // fomat the velocity for rendering.
+    const velocity = {
+      x: (0|worldState.lander.body.velocity.x*100)/100,
+      y: -(0|worldState.lander.body.velocity.y*100)/100,
+    };
     // Apply the same transforms used to render the bodies
     Matter.Render.startViewTransform(worldState.render);
 
     // Render some Text
-    context.fillText(`Force: ${force.x}, ${force.y}`, 10, 20);
+    context.fillText(`Velocity: ${velocity.x}, ${velocity.y}`, 10, 20);
 
     // If we have force, show thruster
     if (force.x !== 0 || force.y !== 0) {

@@ -2,6 +2,8 @@ const { Composite } = Matter;
 const HEIGHT = 375;
 const WIDTH = 812;
 const SEGMENT_WIDTH = 20;
+const SEGMENT_HEIGHT = 20;
+const SEGMENT_MAX_HEIGHT = 16;
 const LANDER_WIDTH = 50;
 
 class SpaceShip {
@@ -111,8 +113,8 @@ function createSurface(maxWidth) {
 
   for (let i = 0; i < totalSegments; i++) {
     const x = i * SEGMENT_WIDTH;
-    const rnd = 0 | (Math.random() * 6);
-    const height = 50 * (rnd + 1);
+    const rnd = 0 | (Math.random() * SEGMENT_MAX_HEIGHT);
+    const height = SEGMENT_HEIGHT * (rnd + 1);
 
     Composite.add(body, Matter.Bodies.rectangle(x + SEGMENT_WIDTH / 2, HEIGHT - 10,
       SEGMENT_WIDTH, height, {
