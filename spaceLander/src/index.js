@@ -138,12 +138,16 @@ Matter.Events.on(worldState.render, 'afterRender', () => {
   const { context } = worldState.render;
   const { force, angle, position } = worldState.lander.body;
   const { thrusterPosition, size } = worldState.lander;
-
+  // fomat the velocity for rendering.
+  const velocity = {
+    x: (0|worldState.lander.body.velocity.x*100)/100,
+    y: -(0|worldState.lander.body.velocity.y*100)/100,
+  };
   // Apply the same transforms used to render the bodies
   Matter.Render.startViewTransform(worldState.render);
 
   // Render some Text
-  context.fillText(`Force: ${force.x}, ${force.y}`, 10, 20);
+  context.fillText(`Velocity: ${velocity.x}, ${velocity.y}`, 10, 20);
 
   // If we have force, show thruster
   if (force.x !== 0 || force.y !== 0) {
