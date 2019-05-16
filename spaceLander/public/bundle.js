@@ -29,7 +29,8 @@
 
     // Fires the main thrusters
     fireThruster() {
-      const thrusterAngle = (0| this.body.angle * 100)/100;
+      // const thrusterAngle = (0| this.body.angle * 100)/100;
+      const thrusterAngle = this.body.angle;
       const thrusterOffset = Matter.Vector.create(0, 1);
       // Create a force that matches the thruster's angle.
       let force = Matter.Vector.rotate(thrusterOffset, thrusterAngle);
@@ -40,7 +41,6 @@
 
     fireManeuvering(angle) {
       const { body } = this;
-      // body.angle += angle;
       Matter.Body.rotate(body, angle);
     }
 
