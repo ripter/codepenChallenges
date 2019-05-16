@@ -125,7 +125,14 @@ function createSurface(maxWidth) {
   return body;
 }
 
-
+// Helper to draw something positioned and rotated on the context.
+function drawAt(context, {x, y, angle}, render) {
+  context.translate(x, y);
+  context.rotate(angle);
+  render(context);
+  context.rotate(-angle);
+  context.translate(-x, -y);
+}
 //
 // Main
 //
@@ -153,12 +160,20 @@ Matter.Events.on(worldState.render, 'afterRender', () => {
 
   // If we have force, show thruster
   if (force.x !== 0 || force.y !== 0) {
-    context.translate(position.x, position.y);
-    context.rotate(angle);
-    context.fillStyle = '#FFDC00';
-    context.fillRect(thrusterPosition.x, thrusterPosition.y, size.width, 75);
-    context.rotate(-angle);
-    context.translate(-position.x, -position.y);
+    drawAt(context, Object.assign({}, position, {angle}), () => {
+      const exhaustSize = 50;
+      const center = {
+        x: thrusterPosition.x + (size.width/2),
+        y: thrusterPosition.y,
+      };
+      context.fillStyle = '#FFDC00';
+      context.beginPath();
+      context.moveTo(center.x - 5, center.y);
+      context.lineTo(thrusterPosition.x, thrusterPosition.y + exhaustSize);
+      context.lineTo(thrusterPosition.x + size.width, thrusterPosition.y + exhaustSize);
+      context.lineTo(center.x + 5, center.y);
+      context.fill();
+    });
   }
 
   // Reset the transforms.
