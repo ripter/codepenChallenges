@@ -31,27 +31,23 @@
       const thrusterOffset = Matter.Vector.create(0, 1);
       // Create a force that matches the thruster's angle.
       let force = Matter.Vector.rotate(thrusterOffset, thrusterAngle);
-      force = Matter.Vector.mult(force, -15);
+      force = Matter.Vector.mult(force, -5);
       // Apply the fource to ourself with no torque
       Matter.Body.applyForce(this.body, this.body.position, force);
     }
 
+    fireManeuvering(angle) {
+      const { body } = this;
+      // body.angle += angle;
+      Matter.Body.rotate(body, angle);
+    }
+
     get thrusterPosition() {
       const { size } = this;
-      const { position } = this.body;
-        return {
+      return {
         x: -size.halfWidth,
         y: size.halfHeight,
       };
-      // return {
-      //   x: position.x - size.halfWidth,
-      //   y: position.y + size.halfHeight,
-      // };
-      // const thrusterAngle = (0| this.body.angle * 100)/100;
-      // return Matter.Vector.rotate({
-      //   x: position.x - size.halfWidth,
-      //   y: position.y + size.halfHeight,
-      // }, thrusterAngle);
     }
   }
 
@@ -125,11 +121,7 @@
         SEGMENT_WIDTH, height, {
           isStatic: true,
           friction: 1,
-          // render: {
-            // fillStyle: '#FF0000',
-            // lineWidth: 0,
-          // },
-      }));
+        }));
     }
     return body;
   }
@@ -145,7 +137,7 @@
   Matter.Engine.run(worldState.engine);
 
   // Render on top of of the rendered bodies.
-  Matter.Events.on(worldState.render, 'afterRender', ({ timestamp }) => {
+  Matter.Events.on(worldState.render, 'afterRender', () => {
     const { context } = worldState.render;
     const { force, angle, position } = worldState.lander.body;
     const { thrusterPosition, size } = worldState.lander;
@@ -158,14 +150,12 @@
 
     // If we have force, show thruster
     if (force.x !== 0 || force.y !== 0) {
-
       context.translate(position.x, position.y);
       context.rotate(angle);
       context.fillStyle = '#FFDC00';
       context.fillRect(thrusterPosition.x, thrusterPosition.y, size.width, 75);
       context.rotate(-angle);
       context.translate(-position.x, -position.y);
-
     }
 
     // Reset the transforms.
@@ -176,14 +166,26 @@
   const inputHandler = {
     handleEvent(event) {
       event.preventDefault();
-      // Fire the lander thrusters
-      worldState.lander.fireThruster();
+      const { target, code } = event;
+      let action = target.getAttribute('action') || code;
+      console.log(action, event.type, event.target, event);
+
+      switch (action) {
+        case 'ArrowLeft':
+          return worldState.lander.fireManeuvering(-0.0872666);
+        case 'ArrowRight':
+          return worldState.lander.fireManeuvering(0.0872666);
+        case 'Space':
+        default:
+          // Fire the lander thrusters
+          return worldState.lander.fireThruster();
+      }
     },
   };
 
   // Use mousedown instead of click so preventDefault can prevent text selection.
   // Use touchend instead of click so preventDefault can prevent iOS zoom when the button is tapped quickly.
-  ['mousedown', 'touchend', 'keypress'].forEach((eventName) => {
+  ['mousedown', 'touchend', 'keydown'].forEach((eventName) => {
     window.addEventListener(eventName, inputHandler);
   });
 

@@ -1,25 +1,26 @@
 body {
-  --canvas_height: 375px;
+  --canvas-height: 375px;
+  --canvas-width: 812px;
 }
 #elCanvas {
-  height: var(--canvas_height);
-  width: 812px;
+  height: var(--canvas-height);
+  width: var(--canvas-width);
   z-index: 1;
 }
 
 .controls {
+  display: flex;
+  justify-content: space-around;
+  font-size: 2em;
+
   position: fixed;
+  width: var(--canvas-width);
   top: calc(var(--canvas_height));
+
   background-color: #fff;
   z-index: 500;
 }
 .key--space {
-  border: thin solid #ddd;
   cursor: pointer;
   text-align: center;
-  width: 40vw;
-
-  font-size: 2em;
-  height: 1em;
-  line-height: 1em;
 }

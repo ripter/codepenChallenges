@@ -28,9 +28,15 @@ class SpaceShip {
     const thrusterOffset = Matter.Vector.create(0, 1);
     // Create a force that matches the thruster's angle.
     let force = Matter.Vector.rotate(thrusterOffset, thrusterAngle);
-    force = Matter.Vector.mult(force, -15);
+    force = Matter.Vector.mult(force, -5);
     // Apply the fource to ourself with no torque
     Matter.Body.applyForce(this.body, this.body.position, force);
+  }
+
+  fireManeuvering(angle) {
+    const { body } = this;
+    // body.angle += angle;
+    Matter.Body.rotate(body, angle);
   }
 
   get thrusterPosition() {
@@ -157,13 +163,25 @@ Matter.Events.on(worldState.render, 'afterRender', () => {
 const inputHandler = {
   handleEvent(event) {
     event.preventDefault();
-    // Fire the lander thrusters
-    worldState.lander.fireThruster();
+    const { target, code } = event;
+    let action = target.getAttribute('action') || code;
+    console.log(action, event.type, event.target, event);
+
+    switch (action) {
+      case 'ArrowLeft':
+        return worldState.lander.fireManeuvering(-0.0872666);
+      case 'ArrowRight':
+        return worldState.lander.fireManeuvering(0.0872666);
+      case 'Space':
+      default:
+        // Fire the lander thrusters
+        return worldState.lander.fireThruster();
+    }
   },
 };
 
 // Use mousedown instead of click so preventDefault can prevent text selection.
 // Use touchend instead of click so preventDefault can prevent iOS zoom when the button is tapped quickly.
-['mousedown', 'touchend', 'keypress'].forEach((eventName) => {
+['mousedown', 'touchend', 'keydown'].forEach((eventName) => {
   window.addEventListener(eventName, inputHandler);
 });
