@@ -4,7 +4,7 @@
   const { Composite } = Matter;
   const HEIGHT = 375;
   const WIDTH = 812;
-  const SEGMENT_WIDTH = 20;
+  const SEGMENT_WIDTH = 15;
   const SEGMENT_HEIGHT = 20;
   const SEGMENT_MAX_HEIGHT = 16;
   const LANDER_WIDTH = 50;
