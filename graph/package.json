@@ -9,7 +9,9 @@
   "author": "Chris Richards",
   "license": "ISC",
   "dependencies": {
-    "http-server": "^0.11.1"
+    "http-server": "^0.11.1",
+    "papaparse": "^5.0.0",
+    "rollup-plugin-commonjs": "^10.0.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.4",
