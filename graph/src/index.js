@@ -1,4 +1,5 @@
 import { parseData } from './parseData.js';
+import { saveSVG } from './saveSVG.js';
 // const HIGHLIGHTS = ['USP30', 'MEP1A', 'MIPEP', 'PMPCB', 'PITRM1', 'OSGEPL1', 'METAP1D', 'XPNPEP3', 'YME1L1', 'SPG7', 'AFG3L2', 'OMA1', 'XRCC6BP1', 'HTRA2', 'LACTB', 'CLPP', 'LONP', 'IMMP2L', 'IMMP1L', 'PARL', 'PARK7', 'PMPCA', 'UQCRC1', 'UQCRC2', 'PRSS35', 'CAPN1', 'CAPN2', 'CAPN10', 'CASP2', 'CASP3', 'CASP7', 'CASP8', 'CASP9'];
 let HIGHLIGHTS = [];
 
@@ -52,7 +53,10 @@ function updateChart() {
 }
 
 
-
+window.elDownload.addEventListener('click', () => {
+  const result = saveSVG(window.chart, 'chart');
+  console.log('saving', result);
+});
 window.elSource.addEventListener('change', updateChart);
 window.elFilter.addEventListener('change', updateChart);
 updateChart();
