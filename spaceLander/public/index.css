@@ -1,0 +1,26 @@
+body {
+  --canvas-height: 375px;
+  --canvas-width: 812px;
+}
+#elCanvas {
+  height: var(--canvas-height);
+  width: var(--canvas-width);
+  z-index: 1;
+}
+
+.controls {
+  display: flex;
+  justify-content: space-around;
+  font-size: 2em;
+
+  position: fixed;
+  width: var(--canvas-width);
+  top: calc(var(--canvas_height));
+
+  background-color: #fff;
+  z-index: 500;
+}
+.key--space {
+  cursor: pointer;
+  text-align: center;
+}

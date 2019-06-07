@@ -1,0 +1,24 @@
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <!-- 3rd Party Libraries, use global cache instead of building in our own copy -->
+  <script src="https://unpkg.com/matter-js@0.14.2/build/matter.js"></script>
+  <title>Ship Lander</title>
+  <link rel="stylesheet" href="./index.css"></link>
+</head>
+<body>
+  <!-- Start Codepen HTML -->
+  <canvas id="elCanvas"></canvas>
+  <div class="controls">
+    <div id="elBtnThruster" action="Space" class="key--space">⬆️ Space</div>
+    <div id="elBtnLeft" action="ArrowLeft" class="key--left">⬅️ Arrow Left</div>
+    <div id="elBtnLeft" action="ArrowRight" class="key--right">➡️ Arrow Right</div>
+  </div>
+  <!-- End Codepen HTML -->
+  <script src="./bundle.js"></script>
+</body>
+</html>
