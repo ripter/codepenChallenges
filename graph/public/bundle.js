@@ -34,7 +34,9 @@
     const chart = d3.select('#chart')
       .append('g')
       .classed('plot', true)
-      .attr('style', 'transform: translate(0.1px, 0.1px);');
+      .attr('style', 'transform: translate(0.1px, 0.1px);')
+      .style('stroke', 'black')
+      .style('stroke-width', 0.01);
 
     // using .extent to find [min,max] of the data
     const domainX = d3.extent(data.points, d => d[1]);
@@ -53,27 +55,21 @@
 
     // Axis
     chart.append('line')
-      .style('stroke', 'blue')
-      .style('stroke-width', 0.01)
+      // .style('stroke', 'black')
+      // .style('stroke-width', 0.01)
       .attr('x1', scaleX(0)).attr('y1', 0)
       .attr('x2', scaleX(0)).attr('y2', HEIGHT);
     // Axis
     chart.append('line')
-      .style('stroke', 'blue')
-      .style('stroke-width', 0.01)
+      // .style('stroke', 'black')
+      // .style('stroke-width', 0.01)
       .attr('x1', 0).attr('y1', scaleY(0))
       .attr('x2', WIDTH).attr('y2', scaleY(0));
 
     //
     // Draw all the data points
     chart.append('g').classed('points', true)
-      .selectAll('circle').data(data.points)
-      .enter().append('circle')
-      .attr('cx', r => scaleX(r[1]))
-      .attr('cy', r => scaleY(r[2]))
-      .attr('r', 0.02)
-      .attr('fill', '#aaa');
-
+      .call(drawPoints, data.points);
 
     //
     // Draw selected with labels
@@ -82,23 +78,62 @@
   }
 
 
+  function drawPoints(sel, data) {
+    const tooltip = d3.select('.tooltip');
+    const enter = sel.selectAll('circle').data(data).enter();
+
+    const point = enter.append('circle')
+      .style('fill', '#aaa')
+      .style('stroke', 'none')
+      .attr('cx', r => scaleX(r[1]))
+      .attr('cy', r => scaleY(r[2]))
+      .attr('r', 0.02);
+
+    // Fade in the tooltip when over the dot
+    point.on('mouseover', function(d) {
+      d3.select(this)
+        .raise()
+        .style('fill', 'black')
+        .attr('r', 0.05);
+      tooltip
+        .transition()
+        .duration(200)
+        .style('opacity', 1);
+      tooltip
+        .html(`${d[0]}<br />${d[1]}<br />${d[2]}`)
+        .style('top', `${d3.event.y +5}px`)
+        .style('left', `${d3.event.x +5}px`);
+    })
+    // Fade out the tooltip when leaving the dot
+    .on('mouseout', function(d) {
+      d3.select(this)
+        .lower()
+        .style('fill', '#aaa')
+        .attr('r', 0.02);
+      tooltip.transition()
+        .duration(1700)
+        .style('opacity', 0);
+    });
+
+  }
+
+
   function drawSelected(sel, data) {
     const enter = sel.selectAll('circle').data(data).enter();
 
-    // Draw a line linking the point and label
+    // Label is Text and a line back to the point.
     const label = enter.append('g')
       .call(d3.drag()
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended));
-
+    // Line from the proint to the text
     const line = label.append('line')
       .style('stroke', 'black')
       .style('stroke-width', 0.01)
       .attr('x1', r => scaleX(r[1])).attr('y1', r => scaleY(r[2]))
       .attr('x2', r => scaleX(r[1])).attr('y2', r => scaleY(r[2]));
-
-    // Add the label text
+    // Add the text
     const text = label.append('text')
       .attr('x', r => scaleX(r[1]))
       .attr('y', r => scaleY(r[2]))
