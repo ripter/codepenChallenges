@@ -5,7 +5,7 @@ export function parseData(filterList, records) {
   return {
     points: records,
     selected: records.filter(([name]) => {
-      return filterList.find(filter => name.includes(filter)) !== undefined;
+      return typeof filterList.find(filter => name.includes(filter)) !== 'undefined';
     }),
   };
 }
