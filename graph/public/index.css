@@ -6,6 +6,16 @@
   cursor: pointer;
 }
 
+.hideLabel #chart .selected text,
+.hideLabel #chart .selected line {
+  display: none;
+}
+
+
+#elFilter {
+  width: 100vw;
+  font-size: 1.2em;
+}
 
 .tooltip {
   opacity: 0;
@@ -16,10 +26,6 @@
 aside {
   width: 100vw;
   padding: 1em;
-}
-aside input {
-  display: block;
-  width: 100%;
 }
 
 

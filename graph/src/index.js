@@ -21,6 +21,9 @@ function updateChart() {
 //
 // DOM Handlers
 //
+window.elShowLabel.addEventListener('change', (e) => {
+  document.body.classList.toggle('hideLabel');
+});
 window.elDownload.addEventListener('click', () => {
   saveSVG(window.chart, 'chart');
 });
