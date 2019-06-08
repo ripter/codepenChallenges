@@ -48,6 +48,18 @@
       .range([HEIGHT, 0]);
 
 
+    // Axis
+    chart.append('line')
+      .style('stroke', 'blue')
+      .style('stroke-width', 0.01)
+      .attr('x1', scaleX(0)).attr('y1', 0)
+      .attr('x2', scaleX(0)).attr('y2', HEIGHT);
+    // Axis
+    chart.append('line')
+      .style('stroke', 'blue')
+      .style('stroke-width', 0.01)
+      .attr('x1', 0).attr('y1', scaleY(0))
+      .attr('x2', WIDTH).attr('y2', scaleY(0));
 
     //
     // Draw all the data points
@@ -75,6 +87,7 @@
       .attr('cy', r => scaleY(r[2]))
       .attr('r', 0.05)
       .attr('fill', 'red');
+
     // Add the label text
     const label = enter.append('text')
       .attr('x', r => scaleX(r[1]))
@@ -85,6 +98,9 @@
         .on('start', dragstarted)
         .on('drag', dragged)
         .on('end', dragended));
+
+    // Draw a line linking the point and label
+    // const line = enter.call(d3.path().moveTo(5, 0).lineTo(5, 10));
   }
 
 
