@@ -3,7 +3,10 @@ let scaleX, scaleY;
 export function renderChart(data) {
   const WIDTH = 10;
   const HEIGHT = 10;
-  const chart = d3.select('#chart');
+  const chart = d3.select('#chart')
+    .append('g')
+    .classed('plot', true)
+    .attr('style', 'transform: translate(0.1px, 0.1px);');
 
   // using .extent to find [min,max] of the data
   const domainX = d3.extent(data.points, d => d[1]);
@@ -72,7 +75,6 @@ function drawSelected(sel, data) {
       .on('end', dragended));
 
   // Draw a line linking the point and label
-  // const line = enter.call(d3.path().moveTo(5, 0).lineTo(5, 10));
 }
 
 
