@@ -1,12 +1,12 @@
 import { SVGToScreen } from './svgPoint.js';
+const WIDTH = 10;
+const HEIGHT = 10;
 let scaleX, scaleY;
 
 export function renderChart(data) {
-  const WIDTH = 10;
-  const HEIGHT = 10;
   const chart = d3.select('#chart')
     .append('g')
-    .classed('plot', true)
+    .classed('inner', true)
     .attr('style', 'transform: translate(0.1px, 0.1px);')
     .style('stroke', 'black')
     .style('stroke-width', 0.01);
@@ -26,18 +26,8 @@ export function renderChart(data) {
     .range([HEIGHT, 0]);
 
 
-  // Axis
-  chart.append('line')
-    // .style('stroke', 'black')
-    // .style('stroke-width', 0.01)
-    .attr('x1', scaleX(0)).attr('y1', 0)
-    .attr('x2', scaleX(0)).attr('y2', HEIGHT);
-  // Axis
-  chart.append('line')
-    // .style('stroke', 'black')
-    // .style('stroke-width', 0.01)
-    .attr('x1', 0).attr('y1', scaleY(0))
-    .attr('x2', WIDTH).attr('y2', scaleY(0));
+  chart.append('g').classed('axis', true)
+    .call(drawAxis);
 
   //
   // Draw all the data points
@@ -119,9 +109,42 @@ function drawSelected(sel, data) {
     .attr('cx', r => scaleX(r[1]))
     .attr('cy', r => scaleY(r[2]))
     .attr('r', 0.05)
-    .attr('fill', 'red');
+    .style('stroke', 'none')
+    .style('fill', 'red');
 }
 
+function drawAxis(sel) {
+  sel.style('stroke', 'black')
+    .style('stroke-width', 0.01)
+    .style('font-size', 0.2)
+
+  console.log(scaleY.ticks());
+  // Draw the Y Axis
+  const entryAxis = sel.append('g')
+    .selectAll('.tick')
+    .data(scaleY.ticks(5))
+    .enter().append('g').classed('tick', true);
+
+  entryAxis.append('line')
+    .attr('x1', 0.2).attr('y1', scaleY)
+    .attr('x2', 0.3).attr('y2', scaleY);
+
+  entryAxis.append('text')
+    .attr('x', 0).attr('y', d => scaleY(d) + 0.05)
+    .text(d => d)
+
+
+  // Draw 0 Axis
+  sel.append('line')
+    .attr('x1', scaleX(0)).attr('y1', 0)
+    .attr('x2', scaleX(0)).attr('y2', HEIGHT);
+  // Axis
+  sel.append('line')
+    // .style('stroke', 'black')
+    // .style('stroke-width', 0.01)
+    .attr('x1', 0).attr('y1', scaleY(0))
+    .attr('x2', WIDTH).attr('y2', scaleY(0));
+}
 
 
 function dragstarted(d) {
