@@ -1,4 +1,3 @@
-import { SVGToScreen } from './svgPoint.js';
 const WIDTH = 10;
 const HEIGHT = 10;
 let scaleX, scaleY;
@@ -14,8 +13,6 @@ export function renderChart(data) {
   // using .extent to find [min,max] of the data
   const domainX = d3.extent(data.points, d => d[1]);
   const domainY = d3.extent(data.points, d => d[2]);
-  console.log('domainX', domainX);
-  console.log('domainY', domainY);
   // Scales will transform domain values into scaled range values.
   // https://github.com/d3/d3-scale/blob/v2.2.2/README.md#_continuous
   scaleX = d3.scaleLinear()
@@ -67,16 +64,16 @@ function drawPoints(sel, data) {
       .style('top', `${d3.event.y +5}px`)
       .style('left', `${d3.event.x +5}px`);
   })
-  // Fade out the tooltip when leaving the dot
-  .on('mouseout', function(d) {
-    d3.select(this)
-      .lower()
-      .style('fill', '#aaa')
-      .attr('r', 0.02);
-    tooltip.transition()
-      .duration(1700)
-      .style('opacity', 0);
-  });
+    // Fade out the tooltip when leaving the dot
+    .on('mouseout', function() {
+      d3.select(this)
+        .lower()
+        .style('fill', '#aaa')
+        .attr('r', 0.02);
+      tooltip.transition()
+        .duration(1700)
+        .style('opacity', 0);
+    });
 
 }
 
@@ -91,13 +88,13 @@ function drawSelected(sel, data) {
       .on('drag', dragged)
       .on('end', dragended));
   // Line from the proint to the text
-  const line = label.append('line')
+  label.append('line')
     .style('stroke', 'black')
     .style('stroke-width', 0.01)
     .attr('x1', r => scaleX(r[1])).attr('y1', r => scaleY(r[2]))
     .attr('x2', r => scaleX(r[1])).attr('y2', r => scaleY(r[2]));
   // Add the text
-  const text = label.append('text')
+  label.append('text')
     .attr('x', r => scaleX(r[1]))
     .attr('y', r => scaleY(r[2]))
     .style('font-size', 0.2)
@@ -105,7 +102,7 @@ function drawSelected(sel, data) {
 
 
   // Add the point
-  const point = enter.append('circle')
+  enter.append('circle')
     .attr('cx', r => scaleX(r[1]))
     .attr('cy', r => scaleY(r[2]))
     .attr('r', 0.05)
@@ -116,9 +113,8 @@ function drawSelected(sel, data) {
 function drawAxis(sel) {
   sel.style('stroke', 'black')
     .style('stroke-width', 0.01)
-    .style('font-size', 0.2)
+    .style('font-size', 0.2);
 
-  console.log(scaleY.ticks());
   // Draw the Y Axis
   const entryAxis = sel.append('g')
     .selectAll('.tick')
@@ -131,7 +127,7 @@ function drawAxis(sel) {
 
   entryAxis.append('text')
     .attr('x', 0).attr('y', d => scaleY(d) + 0.05)
-    .text(d => d)
+    .text(d => d);
 
 
   // Draw 0 Axis
@@ -147,13 +143,13 @@ function drawAxis(sel) {
 }
 
 
-function dragstarted(d) {
+function dragstarted() {
   d3.select(this)
     .raise()
     .classed('active', true);
 }
 
-function dragged(d) {
+function dragged() {
   d3.select(this).select('text')
     .attr('x', d3.event.x)
     .attr('y', d3.event.y);
@@ -163,7 +159,7 @@ function dragged(d) {
     .attr('y2', d3.event.y + 0.05);
 }
 
-function dragended(d) {
+function dragended() {
   d3.select(this)
     .classed('active', false)
     .lower();

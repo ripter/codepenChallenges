@@ -21,7 +21,7 @@ function updateChart() {
 //
 // DOM Handlers
 //
-window.elShowLabel.addEventListener('change', (e) => {
+window.elShowLabel.addEventListener('change', () => {
   document.body.classList.toggle('hideLabel');
 });
 window.elDownload.addEventListener('click', () => {
