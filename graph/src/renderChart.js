@@ -37,8 +37,8 @@ export function renderChart(data) {
 
   //
   // Draw selected with labels
-  chart.append('g').classed('selected', true)
-    .call(drawSelected, data.selected);
+  // chart.append('g').classed('selected', true)
+  //   .call(drawSelected, data.selected);
 }
 
 
@@ -115,49 +115,45 @@ function drawSelected(sel, data) {
 }
 
 function drawAxis(sel) {
+  let enter;
+
   sel.style('stroke', 'black')
     .style('stroke-width', 0.01)
     .style('font-size', 0.2);
 
-  // Draw the Y Axis
-  sel.append('g').classed('y-axis', true)
-    .attr('style', `transform: translateX(-${MARGIN.x-0.1}px)`)
-    .append('line')
-      .attr('x1', MARGIN.x-0.1).attr('y1', 0)
-      .attr('x2', MARGIN.x-0.1).attr('y2', HEIGHT);
 
-  const entryYAxis = sel.select('.y-axis').selectAll('.tick')
-    .data(scaleY.ticks(5))
+  const yAxis = sel.append('g').classed('y-axis', true);
+  enter = yAxis.selectAll('.tick').data(scaleY.ticks())
     .enter().append('g').classed('tick', true);
-  entryYAxis.append('line')
-    .attr('x1', 0.2).attr('y1', scaleY)
-    .attr('x2', 0.3).attr('y2', scaleY);
-  entryYAxis.append('text')
-    .attr('x', 0).attr('y', d => scaleY(d) + 0.05)
-    .text(d => d);
+  enter.append('line')
+    .attr('x1', 0).attr('x2', WIDTH)
+    .attr('y1', scaleY).attr('y2', scaleY);
+  enter.append('text')
+    .text(d => d)
+    .attr('x', 0)
+    .attr('dy', d => scaleY(d) + 0.05);
 
-
-  // Draw the X Axis
-  sel.append('g').classed('x-axis', true)
-    .attr('style', `transform: translateY(-${MARGIN.x-0.1}px)`)
-
-  const entryXAxis = sel.select('.x-axis').selectAll('.tick')
-    .data(scaleX.ticks())
+  const xAxis = sel.append('g').classed('x-axis', true);
+  enter = xAxis.selectAll('.tick').data(scaleX.ticks())
     .enter().append('g').classed('tick', true);
-  entryXAxis.append('line')
-    .attr('x1', scaleX).attr('y1', HEIGHT - MARGIN.y)
-    .attr('x2', d => scaleX(d) + 0.1).attr('y2', HEIGHT - MARGIN.y);
-  entryXAxis.append('text')
-    .attr('x', d => scaleX(d)).attr('y', HEIGHT - MARGIN.y)
-    .text(d => d);
+  enter.append('line')
+    .attr('x1', scaleX).attr('x2', scaleX)
+    .attr('y1', 0).attr('y2', HEIGHT);
+  enter.append('text')
+    .text(d => d)
+    .attr('x', d => scaleX(d) - 0.05)
+    .attr('y', HEIGHT - 0.5);
 
+    
 
   // Draw 0 Axis
   sel.append('line')
+    .style('stroke', 'blue')
     .attr('x1', scaleX(0)).attr('y1', 0)
     .attr('x2', scaleX(0)).attr('y2', HEIGHT);
   // Axis
   sel.append('line')
+    .style('stroke', 'blue')
     // .style('stroke', 'black')
     // .style('stroke-width', 0.01)
     .attr('x1', 0).attr('y1', scaleY(0))
