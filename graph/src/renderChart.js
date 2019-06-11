@@ -133,6 +133,7 @@ function drawAxis(sel) {
     .attr('x', 0)
     .attr('dy', d => scaleY(d) + 0.05);
 
+
   const xAxis = sel.append('g').classed('x-axis', true);
   enter = xAxis.selectAll('.tick').data(scaleX.ticks())
     .enter().append('g').classed('tick', true);
@@ -144,20 +145,33 @@ function drawAxis(sel) {
     .attr('x', d => scaleX(d) - 0.05)
     .attr('y', HEIGHT - 0.5);
 
-    
+
 
   // Draw 0 Axis
-  sel.append('line')
-    .style('stroke', 'blue')
+  const centerAxis = sel.append('g').classed('center-axis', true);
+  centerAxis.append('line')
+    // .style('stroke', 'blue')
     .attr('x1', scaleX(0)).attr('y1', 0)
     .attr('x2', scaleX(0)).attr('y2', HEIGHT);
-  // Axis
-  sel.append('line')
+  centerAxis.append('line')
     .style('stroke', 'blue')
-    // .style('stroke', 'black')
-    // .style('stroke-width', 0.01)
     .attr('x1', 0).attr('y1', scaleY(0))
     .attr('x2', WIDTH).attr('y2', scaleY(0));
+
+  const box = sel.append('g').classed('box', true)
+    .style('stroke', 'red');
+  box.append('line')
+    .attr('x1', 0).attr('x2', WIDTH)
+    .attr('y1', 0).attr('y2', 0);
+  box.append('line')
+    .attr('x1', WIDTH).attr('x2', WIDTH)
+    .attr('y1', 0).attr('y2', HEIGHT);
+  box.append('line')
+    .attr('x1', WIDTH).attr('x2', 0)
+    .attr('y1', HEIGHT).attr('y2', HEIGHT);
+  box.append('line')
+    .attr('x1', 0).attr('x2', 0)
+    .attr('y1', HEIGHT).attr('y2', 0);
 }
 
 
