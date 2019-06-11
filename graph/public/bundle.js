@@ -28,13 +28,17 @@
 
   const WIDTH = 10;
   const HEIGHT = 10;
+  const MARGIN = {
+    x: 0.5,
+    y: 0.5,
+  };
   let scaleX, scaleY;
 
   function renderChart(data) {
     const chart = d3.select('#chart')
       .append('g')
       .classed('inner', true)
-      .attr('style', 'transform: translate(0.1px, 0.1px);')
+      .attr('style', `transform: translate(${MARGIN.x}px, ${MARGIN.y}px);`)
       .style('stroke', 'black')
       .style('stroke-width', 0.01);
 
@@ -144,17 +148,35 @@
       .style('font-size', 0.2);
 
     // Draw the Y Axis
-    const entryAxis = sel.append('g')
-      .selectAll('.tick')
+    sel.append('g').classed('y-axis', true)
+      .attr('style', `transform: translateX(-${MARGIN.x-0.1}px)`)
+      .append('line')
+        .attr('x1', MARGIN.x-0.1).attr('y1', 0)
+        .attr('x2', MARGIN.x-0.1).attr('y2', HEIGHT);
+
+    const entryYAxis = sel.select('.y-axis').selectAll('.tick')
       .data(scaleY.ticks(5))
       .enter().append('g').classed('tick', true);
-
-    entryAxis.append('line')
+    entryYAxis.append('line')
       .attr('x1', 0.2).attr('y1', scaleY)
       .attr('x2', 0.3).attr('y2', scaleY);
-
-    entryAxis.append('text')
+    entryYAxis.append('text')
       .attr('x', 0).attr('y', d => scaleY(d) + 0.05)
+      .text(d => d);
+
+
+    // Draw the X Axis
+    sel.append('g').classed('x-axis', true)
+      .attr('style', `transform: translateY(-${MARGIN.x-0.1}px)`);
+
+    const entryXAxis = sel.select('.x-axis').selectAll('.tick')
+      .data(scaleX.ticks())
+      .enter().append('g').classed('tick', true);
+    entryXAxis.append('line')
+      .attr('x1', scaleX).attr('y1', HEIGHT - MARGIN.y)
+      .attr('x2', d => scaleX(d) + 0.1).attr('y2', HEIGHT - MARGIN.y);
+    entryXAxis.append('text')
+      .attr('x', d => scaleX(d)).attr('y', HEIGHT - MARGIN.y)
       .text(d => d);
 
 
