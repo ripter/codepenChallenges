@@ -28,17 +28,13 @@
 
   const WIDTH = 10;
   const HEIGHT = 10;
-  const MARGIN = {
-    x: 0.5,
-    y: 0.5,
-  };
   let scaleX, scaleY;
 
   function renderChart(data) {
     const chart = d3.select('#chart')
       .append('g')
       .classed('inner', true)
-      .attr('style', `transform: translate(${MARGIN.x}px, ${MARGIN.y}px);`)
+      // .attr('style', `transform: translate(${MARGIN.x}px, ${MARGIN.y}px);`)
       .style('stroke', 'black')
       .style('stroke-width', 0.01);
 
@@ -143,16 +139,16 @@
 
 
     // Draw 0 Axis
-    const centerAxis = sel.append('g').classed('center-axis', true);
+    const centerAxis = sel.append('g').classed('center-axis', true)
+      .style('stroke', 'blue');
     centerAxis.append('line')
-      // .style('stroke', 'blue')
       .attr('x1', scaleX(0)).attr('y1', 0)
       .attr('x2', scaleX(0)).attr('y2', HEIGHT);
     centerAxis.append('line')
-      .style('stroke', 'blue')
       .attr('x1', 0).attr('y1', scaleY(0))
       .attr('x2', WIDTH).attr('y2', scaleY(0));
 
+    // Draw a box around the graph
     const box = sel.append('g').classed('box', true)
       .style('stroke', 'red');
     box.append('line')
