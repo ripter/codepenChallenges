@@ -1,0 +1,50 @@
+:root {
+  --color-background: #001f3f;
+  --color-text: white;
+  --color-link: #7FDBFF;
+  --size-hand: 124px;
+}
+
+body, input, a, button {
+  font-size: 14pt;
+  line-height: 16pt;
+}
+
+body {
+  margin-right: auto;
+  margin-left: auto;
+  background-color: var(--color-background);
+  color: var(--color-text);
+}
+
+footer {
+  font-size: 0.75em;
+  position: fixed;
+  bottom: 0;
+}
+footer a {
+  font-size: 1em;
+}
+
+a {
+  color: var(--color-link);
+}
+
+
+/* Dialog is used for Player Input */
+dialog {
+  display: flex;
+  justify-content: space-between;
+  min-width: 75vmin;
+  position: relative;
+}
+rps-hand > svg {
+  width: var(--size-hand);
+  height: var(--size-hand);
+  cursor: pointer;
+}
+
+
+.sharecode {
+  
+}

@@ -1,0 +1,75 @@
+:root {
+  --color-background: #001f3f;
+  --color-text: white;
+  --color-link: #7FDBFF;
+  --size-hand: 124px;
+}
+
+body, input, a, button {
+  font-size: 14pt;
+  line-height: 16pt;
+}
+
+body {
+  margin-right: auto;
+  margin-left: auto;
+  background-color: var(--color-background);
+  color: var(--color-text);
+  width: calc(var(--size-hand) * 5);
+}
+
+footer {
+  bottom: 0;
+  font-size: 0.75em;
+  position: fixed;
+}
+footer > span {
+  margin-right: 1em;
+}
+footer a {
+  font-size: 1em;
+}
+
+a {
+  color: var(--color-link);
+}
+
+
+/*
+ Base Styles
+*/
+
+rps-game {
+  display: block;
+}
+
+
+rps-hand-picker {
+  display: flex;
+  justify-content: space-around;
+  background-color: var(--color-text);
+  padding: 1em 0;
+}
+rps-hand-picker > svg {
+  width: var(--size-hand);
+  height: var(--size-hand);
+  cursor: pointer;
+}
+
+
+rps-hand-picker[selected] [hand] {
+  filter: blur(2px) sepia(1);
+}
+
+/*
+ Active Styles
+*/
+rps-hand-picker[selected="rock"] [hand="rock"] {
+  filter: sepia(0);
+}
+rps-hand-picker[selected="paper"] [hand="paper"] {
+  filter: sepia(0);
+}
+rps-hand-picker[selected="scissors"] [hand="scissors"] {
+  filter: sepia(0);
+}
