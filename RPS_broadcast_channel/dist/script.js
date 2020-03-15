@@ -35,11 +35,6 @@ function gameLogic(prevState, action) {
   // Update the token
   setToken(turn);
 
-  // const queryParams = createPayload({
-  //   hand: state.playerHand,
-  // });
-  // state.shareLink = `${window.location.href}?${queryParams}`;
-
   // console.log('queryParams', queryParams);
   // console.log('state', state);
   // console.groupEnd();
@@ -93,7 +88,7 @@ define('rps-game', element => {
       .dispatch=${dispatch}
       />
 
-    <a href=${`${window.location.href}?${state.sharePayload}`}>Opponent Link!</a>
+    ${ShareLink({payload: state.sharePayload})}
   `);
 });
 
@@ -111,47 +106,19 @@ define('rps-hand-picker', element => {
   </dialog>`);
 });
 
+
+
 //
 // Share/Varifiy Link.
 // This link is shared with the Opponent
-// function ShareLink(props) {
-//   const { link } = props
-//   console.log('ShareLink', props);
-//   return html`
-//     <a href=${link}>Opponent Link!</a>
-//   `;
-// }
-// define('rps-share-link', element => {
-//   const { link } = element;
-//   // const href = element.getAttribute('href');
-//   console.log('rps-share-link', element);
-//   render(element, html`
-//     <a href=${link}>Opponent Link!</a>
-//   `);
-// });
-define('rps-share-link', {
-  // observedAttributes: ['payload'],
-  attributeChanged(name, oldValue, newValue) {
-    console.group('attribbute changed');
-    console.log('name', name);
-    console.log('newValue', newValue);
-    console.log('this', this);
-    console.groupEnd();
-    this.render(this);
-    this.link = newValue;
-    // this.element.removeAttribute(name);
-  },
+function ShareLink(props) {
+  const { payload } = props
+  console.log('ShareLink', props);
+  return html`
+    <a href=${`${window.location.href}?${payload}`}>Opponent Link!</a>
+  `;
+}
 
-  render(element) {
-    // const link = element.getAttribute('href');
-    // const link = 'Rose:Chris';
-    const { payload } = element;
-    console.log('element', element, payload);
-    render(element, html`
-      <a href=${`${window.location.href}?${payload}`}>Opponent Link!</a>
-    `);
-  },
-});
 
 
 
