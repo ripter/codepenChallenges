@@ -10,35 +10,39 @@ import {define, useReducer, useEffect} from 'https://unpkg.com/hooked-elements?m
 function gameLogic(prevState, action) {
   const { type, hand, token, payload } = action;
   let state = {...prevState}; // Shallow copy
-  console.group('gameLogic Loop');
-  console.log('action', action);
-  console.log('prevState', prevState);
-
-  console.log('state.token', state.token);
+  // console.group('gameLogic Loop');
+  // console.log('action', action);
+  // console.log('prevState', prevState);
+  // console.log('state.token', state.token);
 
   //
   // Perform action based on type
   if (type === 'init') {
+    // Load inital state
     Object.assign(state, initGame(payload, token));
   }
   else if (type === 'click') {
     state.playerHand = hand;
-    // setToken({
-    //   token: uuidv4(),
-    //   hand,
-    // });
+    state.playerToken = uuidv4();
   }
 
-  // Create the link to share
-  const queryParams = createPayload({
+  // update share link and saved state.
+  const turn = {
     hand: state.playerHand,
-    // token: state.
-  });
-  state.shareLink = `${window.location.href}?${queryParams}`;
+    token: state.playerToken,
+  };
+  state.sharePayload = createPayload(turn);
+  // Update the token
+  setToken(turn);
 
-  console.log('queryParams', queryParams);
-  console.log('state', state);
-  console.groupEnd();
+  // const queryParams = createPayload({
+  //   hand: state.playerHand,
+  // });
+  // state.shareLink = `${window.location.href}?${queryParams}`;
+
+  // console.log('queryParams', queryParams);
+  // console.log('state', state);
+  // console.groupEnd();
   return state;
 }
 
@@ -53,38 +57,6 @@ function initGame(payload, token) {
       opponentToken: payload.token,
     };
   }
-
-
-
-  // Brand new Game
-  // No payload from URL, and no stored token
-  // if (!payload && !token) {
-  //   return {
-  //     playerToken: uuidv4(),
-  //   };
-  // }
-
-  // Payload comes from following one of the two links.
-  // const { opponentToken, opponentHand } = payload;
-
-  // Case 1: Verifcation Payload
-
-  // Case 2: Opponent Payload
-
-  // Case 3: Empty State
-
-  // If our token equals the opponentToken,
-  // then the user opened their own link.
-  // if (opponentToken === token) {
-  //   return {
-  //     playerHand: opponentHand,
-  //     playerToken: token,
-  //   };
-  // }
-  // return {
-  //   opponentHand,
-  //   opponentToken,
-  // };
 }
 
 
@@ -121,12 +93,13 @@ define('rps-game', element => {
       .dispatch=${dispatch}
       />
 
-    <rps-share-link href=${state.shareLink} />
+    <a href=${`${window.location.href}?${state.sharePayload}`}>Opponent Link!</a>
   `);
 });
 
 //
 // Render a clickable list of Hands
+// defined as a hooked-element
 define('rps-hand-picker', element => {
   const { dispatch, possibleHands } = element;
 
@@ -141,10 +114,43 @@ define('rps-hand-picker', element => {
 //
 // Share/Varifiy Link.
 // This link is shared with the Opponent
-define('rps-share-link', element => {
-  render(element, html`
-    <h1>Link!</h1>
-  `);
+// function ShareLink(props) {
+//   const { link } = props
+//   console.log('ShareLink', props);
+//   return html`
+//     <a href=${link}>Opponent Link!</a>
+//   `;
+// }
+// define('rps-share-link', element => {
+//   const { link } = element;
+//   // const href = element.getAttribute('href');
+//   console.log('rps-share-link', element);
+//   render(element, html`
+//     <a href=${link}>Opponent Link!</a>
+//   `);
+// });
+define('rps-share-link', {
+  // observedAttributes: ['payload'],
+  attributeChanged(name, oldValue, newValue) {
+    console.group('attribbute changed');
+    console.log('name', name);
+    console.log('newValue', newValue);
+    console.log('this', this);
+    console.groupEnd();
+    this.render(this);
+    this.link = newValue;
+    // this.element.removeAttribute(name);
+  },
+
+  render(element) {
+    // const link = element.getAttribute('href');
+    // const link = 'Rose:Chris';
+    const { payload } = element;
+    console.log('element', element, payload);
+    render(element, html`
+      <a href=${`${window.location.href}?${payload}`}>Opponent Link!</a>
+    `);
+  },
 });
 
 
