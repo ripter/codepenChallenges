@@ -10,7 +10,7 @@
   "license": "ISC",
   "dependencies": {
     "http-server": "^0.11.1",
-    "papaparse": "^5.0.0",
+    "papaparse": "^5.2.0",
     "rollup-plugin-commonjs": "^10.0.0"
   },
   "devDependencies": {
