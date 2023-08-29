@@ -2,14 +2,14 @@
 <html lang="en" >
 <head>
   <meta charset="UTF-8">
-  <title>CodePen - WIP: broadcast-channel 301 </title>
+  <title>Severless Rock, Paper, Scissors</title>
   <link rel="stylesheet" href="./style.css">
 
 </head>
 <body>
 
 <!-- RPS Game Root -->
-<rps-game></rps-game>
+<div id="root"></div>
 
 
 
@@ -26,8 +26,7 @@
 
 
 <!-- SVG Refrence Images -->
-<?xml version="1.0" encoding="utf-8"?>
-<svg viewBox="0 0 124 124" xmlns="http://www.w3.org/2000/svg">
+<svg style="display: none;" viewBox="0 0 124 124" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <g id="svg-rock" style="">
       <title>Rock Hand</title>
@@ -47,6 +46,6 @@
   </defs>
 </svg>
 
-  <script src='https://cdn.jsdelivr.net/npm/broadcast-channel@3.1.0/dist/lib/browser.js'></script><script type="module" src="./script.js"></script>
+  <script type="module" src="./script.js"></script>
 </body>
 </html>
