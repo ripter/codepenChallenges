@@ -1,4 +1,4 @@
-# WIP: broadcast-channel 301 
- _A Pen created at CodePen.io. Original URL: [https://codepen.io/ripter/pen/GRJxgwX](https://codepen.io/ripter/pen/GRJxgwX).
+# Blank React App
+ _A Pen created at CodePen.io. Original URL: [https://codepen.io/ripter/pen/MWgLoaV](https://codepen.io/ripter/pen/MWgLoaV).
 
- Shows basic usage of broadcast-channel by creating a cross-tab chat.
+ 
