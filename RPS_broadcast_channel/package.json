@@ -1,9 +1,9 @@
 {
-  "name": "wip-broadcast-channel-301",
-  "version": "2020.2.6-21.35.40",
+  "name": "blank-react-app",
+  "version": "2020.1.4-21.18.23",
   "private": false,
   "license": "MIT",
-  "homepage": "https://codepen.io/ripter/pen/GRJxgwX",
+  "homepage": "https://codepen.io/ripter/pen/MWgLoaV",
   "scripts": {
     "build": "gulp -f ./build/gulpfile.js --cwd ./ --continue",
     "serve": "gulp serve -f ./build/gulpfile.js --cwd ./ --continue",
@@ -23,7 +23,25 @@
     "webpack": "^4.29.6",
     "webpack-cli": "^3.2.3",
     "webpack-dev-server": "^3.2.1",
-    "gulp-inject-partials": "^1.0.5"
+    "gulp-inject-partials": "^1.0.5",
+    "gulp-babel": "^8.0.0",
+    "@babel/core": "^7.4.5",
+    "@babel/plugin-proposal-class-properties": "^7.4.4",
+    "@babel/plugin-proposal-decorators": "^7.4.4",
+    "@babel/plugin-proposal-do-expressions": "^7.2.0",
+    "@babel/plugin-proposal-function-bind": "^7.2.0",
+    "@babel/plugin-proposal-function-sent": "^7.2.0",
+    "@babel/plugin-proposal-json-strings": "^7.2.0",
+    "@babel/plugin-proposal-logical-assignment-operators": "^7.2.0",
+    "@babel/plugin-transform-modules-commonjs": "^7.4.4",
+    "@babel/plugin-proposal-nullish-coalescing-operator": "^7.4.4",
+    "@babel/plugin-proposal-numeric-separator": "^7.2.0",
+    "@babel/plugin-proposal-optional-chaining": "^7.2.0",
+    "@babel/plugin-proposal-pipeline-operator": "^7.3.2",
+    "@babel/plugin-proposal-throw-expressions": "^7.2.0",
+    "@babel/plugin-syntax-jsx": "^7.2.0",
+    "@babel/plugin-transform-react-display-name": "^7.2.0",
+    "@babel/plugin-transform-react-jsx": "^7.3.0"
   },
   "tasks": {
     "partials": {
@@ -50,6 +68,55 @@
         "**/*.partial.html",
         "**/*.template.html"
       ]
+    },
+    "babel": {
+      "src": [
+        "**/*.js",
+        "**/*.babel"
+      ],
+      "pipe": [
+        {
+          "require": "gulp-babel"
+        }
+      ],
+      "cleanup": [
+        "**/*.babel"
+      ]
     }
+  },
+  "babel": {
+    "plugins": [
+      "@babel/plugin-proposal-class-properties",
+      [
+        "@babel/plugin-proposal-decorators",
+        {
+          "decoratorsBeforeExport": true
+        }
+      ],
+      "@babel/plugin-proposal-do-expressions",
+      "@babel/plugin-proposal-function-bind",
+      "@babel/plugin-proposal-function-sent",
+      "@babel/plugin-proposal-json-strings",
+      "@babel/plugin-proposal-logical-assignment-operators",
+      [
+        "@babel/plugin-transform-modules-commonjs",
+        {
+          "strictMode": false
+        }
+      ],
+      "@babel/plugin-proposal-nullish-coalescing-operator",
+      "@babel/plugin-proposal-numeric-separator",
+      "@babel/plugin-proposal-optional-chaining",
+      [
+        "@babel/plugin-proposal-pipeline-operator",
+        {
+          "proposal": "smart"
+        }
+      ],
+      "@babel/plugin-proposal-throw-expressions",
+      "@babel/plugin-syntax-jsx",
+      "@babel/plugin-transform-react-display-name",
+      "@babel/plugin-transform-react-jsx"
+    ]
   }
 }
