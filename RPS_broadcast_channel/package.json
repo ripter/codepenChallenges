@@ -35,7 +35,7 @@
     "browser-sync": "^2.29.3",
     "del": "^4.1.1",
     "glob": "^7.1.4",
-    "gulp": "^3.9.1",
+    "gulp": "^4.0.2",
     "gulp-babel": "^8.0.0",
     "gulp-inject-partials": "^1.0.5",
     "gulp-rename": "^1.4.0",
