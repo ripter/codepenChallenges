@@ -15,13 +15,13 @@
     "distDir": "dist/"
   },
   "devDependencies": {
-    "browser-sync": "^2.26.7",
+    "browser-sync": "^2.29.3",
     "del": "^4.1.1",
     "glob": "^7.1.4",
     "gulp": "^4.0.2",
     "gulp-rename": "^1.4.0",
     "webpack": "^4.29.6",
-    "webpack-cli": "^3.2.3",
+    "webpack-cli": "^3.3.12",
     "webpack-dev-server": "^3.2.1",
     "gulp-inject-partials": "^1.0.5",
     "gulp-babel": "^8.0.0",
